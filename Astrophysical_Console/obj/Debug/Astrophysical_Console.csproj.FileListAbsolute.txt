@@ -1,0 +1,10 @@
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\bin\Debug\Astrophysical_Console.exe.config
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\bin\Debug\Astrophysical_Console.exe
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\bin\Debug\Astrophysical_Console.pdb
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.csprojAssemblyReference.cache
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.Main.resources
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.Properties.Resources.resources
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.csproj.GenerateResource.cache
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.csproj.CoreCompileInputs.cache
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.exe
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.pdb
