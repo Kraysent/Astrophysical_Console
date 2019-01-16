@@ -6,38 +6,6 @@ namespace Astrophysical_Console.Tests
     [TestClass]
     public class CoordinatesTests
     {
-        [DataTestMethod]
-        [DataRow("1+1+5", 3665, 7328)]
-        [DataRow("1+1+9", 3669, 7328)]
-        public void RAToString(string expected, int raSeconds, int decSeconds)
-        {
-            //Arrange
-            string actual;
-            Coordinates coords = new Coordinates(raSeconds, decSeconds);
-
-            //Act
-            actual = coords.RAToString();
-
-            //Assert
-            Assert.AreEqual(expected, actual);
-        }
-        
-        [DataTestMethod]
-        [DataRow("2+2+8", 3665, 7328)]
-        [DataRow("2+2+10", 3669, 7330)]
-        public void DecToString(string expected, int raSeconds, int decSeconds)
-        {
-            //Arrange
-            string actual;
-            Coordinates coords = new Coordinates(raSeconds, decSeconds);
-
-            //Act
-            actual = coords.DecToString();
-
-            //Assert
-            Assert.AreEqual(expected, actual);
-        }
-
         [TestMethod]
         public void PlusOperator()
         {
@@ -67,5 +35,8 @@ namespace Astrophysical_Console.Tests
             //Assert
             Assert.AreEqual(expected, actual);
         }
+
+        //[TestMethod]
+        //public void 
     }
 }

@@ -1,7 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Astrophysical_Console
 {
@@ -53,9 +54,17 @@ namespace Astrophysical_Console
             return source.Split('\n');
         }
         
-        /*public static string[] HTMLParseLinks(string[] source)
+        /// <summary>
+        /// Returns the list of radioobjects from the link parsed from HTML code
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="coords"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> HTMLParseLinkToObjects(string[] source)
         {
-            string link, fileName;
+            string link = "";
+            string[] output;
+            int i;
 
             foreach (string line in source)
             {
@@ -65,7 +74,25 @@ namespace Astrophysical_Console
                 }
             }
 
+            output = Encoding.ASCII.GetString((new WebClient()).DownloadData(link)).Split('\n');
 
-        }*/
+            for (i = 24; i < output.Length; i++)
+            {
+                if (output[i].IndexOf("-----") == -1)
+                {
+                    yield return output[i];
+                }
+                else
+                {
+                    break;
+                }
+
+            }
+        }
+
+        public static IEnumerable<Radioobject> ParseRadioobjects(string[] objList325, string[] objList1400)
+        {
+            
+        }
     }
 }

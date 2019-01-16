@@ -46,6 +46,9 @@ namespace Astrophysical_Console
             decS = decArr[2];
         }
 
+        /// <summary>
+        /// Coordinate's right ascension hours value
+        /// </summary>
         public int RAH
         {
             get => raH;
@@ -56,22 +59,79 @@ namespace Astrophysical_Console
                 else throw new InvalidOperationException("Right ascension hours value can not be more than 24 and less than 0.");
             }
         }
+        /// <summary>
+        /// Coordinate's right ascension minutes value
+        /// </summary>
         public int RAM
         {
             get => raM;
             set
             {
                 if (value >= 0 && value < 60)
-                    raH = value;
+                    raM = value;
                 else throw new InvalidOperationException("Right ascension minutes value can not be more than 60 and less than 0.");
             }
         }
-        public int RAS { get => raS; set => raS = value; }
-        public int DecD { get => decD; set => decD = value; }
-        public int DecM { get => decM; set => decM = value; }
-        public int DecS { get => decS; set => decS = value; }
+        /// <summary>
+        /// Coordinate's right ascension seconds value
+        /// </summary>
+        public int RAS
+        {
+            get => raS;
+            set
+            {
+                if (value >= 0 && value < 60)
+                    raS = value;
+                else throw new InvalidOperationException("Right ascension seconds value can not be more than 60 and less than 0.");
+            }
+        }
+        /// <summary>
+        /// Coordinate's decline degrees value
+        /// </summary>
+        public int DecD
+        {
+            get => decD;
+            set
+            {
+                if (value >= 0 && value < 360)
+                    decD = value;
+                else throw new InvalidOperationException("Decline degrees value can not be more than 360 and less than 0.");
+            }
+        }
+        /// <summary>
+        /// Coordinate's decline minutes value
+        /// </summary>
+        public int DecM
+        {
+            get => decM;
+            set
+            {
+                if (value >= 0 && value < 60)
+                    decM = value;
+                else throw new InvalidOperationException("Decline minutes value can not be more than 60 and less than 0.");
+            }
+        }
+        /// <summary>
+        /// Coordinate's decline seconds value
+        /// </summary>
+        public int DecS
+        {
+            get => decS;
+            set
+            {
+                if (value >= 0 && value < 60)
+                    decS = value;
+                else throw new InvalidOperationException("Decline seconds value can not be more than 60 and less than 0.");
+            }
+        }
 
+        /// <summary>
+        /// Converts RA coordinate to RA seconds
+        /// </summary>
         public int RASeconds => RAH * 3600 + RAM * 60 + RAS;
+        /// <summary>
+        /// Converts decline coordinate to decline seconds
+        /// </summary>
         public int DecSeconds => DecD * 3600 + DecM * 60 + DecS;
         
         public override bool Equals(object obj1)
@@ -138,6 +198,8 @@ namespace Astrophysical_Console
 
             return new Coordinates(raHours, raMins, raSecs, decDegrees, decMins, decSecs);
         }
+
+        public static double Distance(Coordinates c1, Coordinates c2) => Math.Sqrt(Math.Pow((c2.RASeconds - c1.RASeconds) / 15, 2) + Math.Pow((c2.DecSeconds - c1.DecSeconds), 2));
 
         private static int Residual(int n, int d)
         {
