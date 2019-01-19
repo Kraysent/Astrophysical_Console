@@ -33,7 +33,7 @@ namespace Astrophysical_Console
             decS = decSeconds - decD * 3600 - decM * 60;
         }
 
-        public Coordinates(string ra, string dec, char splitChar)
+        public Coordinates(string ra, string dec, char splitChar = '+')
         {
             int[] raArr = ra.Split(splitChar).Select(x => int.Parse(x)).ToArray();
             int[] decArr = ra.Split(splitChar).Select(x => int.Parse(x)).ToArray();

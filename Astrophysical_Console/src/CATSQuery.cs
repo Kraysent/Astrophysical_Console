@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Astrophysical_Console
 {
-    static class CATSQuery
+    static class DBQuery
     {
         private const string URL = "https://www.sao.ru/cats/cq";
 
@@ -69,9 +69,7 @@ namespace Astrophysical_Console
             foreach (string line in source)
             {
                 if (line.Contains("<a href =\""))
-                {
                     link = "https://www.sao.ru/cats/" + line.Substring(13, 20);
-                }
             }
 
             output = Encoding.ASCII.GetString((new WebClient()).DownloadData(link)).Split('\n');
@@ -79,20 +77,42 @@ namespace Astrophysical_Console
             for (i = 24; i < output.Length; i++)
             {
                 if (output[i].IndexOf("-----") == -1)
-                {
                     yield return output[i];
-                }
                 else
-                {
                     break;
-                }
-
             }
         }
 
+        /// <summary>
+        /// Returns the list of Radioobjects from two lists
+        /// </summary>
+        /// <param name="objList325"></param>
+        /// <param name="objList1400"></param>
+        /// <returns></returns>
         public static IEnumerable<Radioobject> ParseRadioobjects(string[] objList325, string[] objList1400)
         {
-            
+            foreach (string obj1 in objList325)
+            {
+                string[] obj1Params = obj1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                Coordinates coords1 = new Coordinates(obj1Params[2] + "+" + obj1Params[3] + "+" + obj1Params[4].Split('.')[0], 
+                    obj1Params[6] + "+" + obj1Params[7] + "+" + obj1Params[8].Split('.')[0]);
+
+                foreach (string obj2 in objList1400)
+                {
+                    string[] obj2Params = obj2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    Coordinates coords2 = new Coordinates(obj2Params[2] + "+" + obj2Params[3] + "+" + obj2Params[4].Split('.')[0],
+                        obj2Params[6] + "+" + obj2Params[7] + "+" + obj2Params[8].Split('.')[0]);
+
+                    if (Coordinates.Distance(coords1, coords2) < 15)
+                    {
+                        yield return new Radioobject(obj1Params[0], obj1Params[1], coords1, double.Parse(obj1Params[11]), double.Parse(obj2Params[11]));
+                    }
+
+                    break;
+                }
+            }
         }
     }
 }
