@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -112,6 +113,62 @@ namespace Astrophysical_Console
 
                     break;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Downloads single picture to the specific directory
+        /// </summary>
+        /// <param name="coords"></param>
+        /// <param name="outputPath"></param>
+        public static void GetPicture(Coordinates coords, string outputPath)
+        {
+            string url = "https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Position=" + coords.ToString() + "&survey=NVSS&coordinates=J2000&coordinates=" +
+                "&projection=Tan&pixels=300&size=0.1&float=on&scaling=Log&resolver=SIMBAD-NED&Sampler=_skip_&Deedger=_skip_&rotation=&Smooth=" +
+                "&lut=colortables%2Fb-w-linear.bin&PlotColor=&grid=_skip_&gridlabels=1&catalogurl=&CatalogIDs=on&survey=_skip_&survey=_skip_&survey=_skip_" +
+                "&IOSmooth=&contour=&contourSmooth=&ebins=null";
+            HttpWebRequest request = WebRequest.CreateHttp(url);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            string[] source = (new StreamReader(response.GetResponseStream())).ReadToEnd().Split('\n');
+            string imgUrl;
+            int i;
+
+            for (i = 0; i < source.Length; i++)
+            {
+                if (source[i].IndexOf("img id") != -1)
+                {
+                    if (source[i + 1].IndexOf("src") != -1)
+                    {
+                        imgUrl = "https://skyview.gsfc.nasa.gov/" + source[i + 1].Substring(source[i + 1].IndexOf("src") + 5, source[i + 1].Length -
+                           source[i + 1].IndexOf("src") - 7);
+
+                        try
+                        {
+                            using (WebClient client = new WebClient())
+                            {
+                                Directory.CreateDirectory(outputPath + @"\Pictures\");
+
+                                client.DownloadFile(imgUrl, outputPath + @"\Pictures\" + coords.ToString());
+                            }
+                        }
+                        catch (WebException)
+                        {
+                            Console.WriteLine("Caught WebException on coordinates {0}", coords.ToString());
+                        }
+                    }
+                }
+            }
+
+        }
+
+        /// <summary>
+        /// Downloads pictures for all objects in the list
+        /// </summary>
+        public static void GetPicture(IEnumerable<Radioobject> objects, string outputPath)
+        {
+            foreach (Radioobject obj in objects)
+            {
+                GetPicture(obj.Coords, outputPath)
             }
         }
     }
