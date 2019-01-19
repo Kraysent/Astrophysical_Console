@@ -14,5 +14,12 @@
       <FileName>src\Radioobject.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Astrophysical_Console.DBQuery">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAhAABAAAAAAAAAAAAgAAAAAAAAAAgA=</HashCode>
+      <FileName>src\DBQuery.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

@@ -9,8 +9,6 @@ namespace Astrophysical_Console
 {
     static class DBQuery
     {
-        private const string URL = "https://www.sao.ru/cats/cq";
-
         /// <summary>
         /// Gets the HTML code of page from www.sao.ru with specific coordinates
         /// </summary>
@@ -20,6 +18,7 @@ namespace Astrophysical_Console
         /// <returns></returns>
         public static string[] Query(Coordinates coords, int frequency, int radius)
         {
+            const string URL = "https://www.sao.ru/cats/cq";
             WebRequest request = WebRequest.Create(URL);
             WebResponse response;
             string postData = "", source;
@@ -117,7 +116,7 @@ namespace Astrophysical_Console
         }
 
         /// <summary>
-        /// Downloads single picture to the specific directory
+        /// Downloads single picture to the specific directory 
         /// </summary>
         /// <param name="coords"></param>
         /// <param name="outputPath"></param>
@@ -127,9 +126,7 @@ namespace Astrophysical_Console
                 "&projection=Tan&pixels=300&size=0.1&float=on&scaling=Log&resolver=SIMBAD-NED&Sampler=_skip_&Deedger=_skip_&rotation=&Smooth=" +
                 "&lut=colortables%2Fb-w-linear.bin&PlotColor=&grid=_skip_&gridlabels=1&catalogurl=&CatalogIDs=on&survey=_skip_&survey=_skip_&survey=_skip_" +
                 "&IOSmooth=&contour=&contourSmooth=&ebins=null";
-            HttpWebRequest request = WebRequest.CreateHttp(url);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            string[] source = (new StreamReader(response.GetResponseStream())).ReadToEnd().Split('\n');
+            string[] source = GetHTMLCode(url);
             string imgUrl;
             int i;
 
@@ -151,14 +148,10 @@ namespace Astrophysical_Console
                                 client.DownloadFile(imgUrl, outputPath + @"\Pictures\" + coords.ToString());
                             }
                         }
-                        catch (WebException)
-                        {
-                            Console.WriteLine("Caught WebException on coordinates {0}", coords.ToString());
-                        }
+                        catch (WebException) { }
                     }
                 }
             }
-
         }
 
         /// <summary>
@@ -168,8 +161,74 @@ namespace Astrophysical_Console
         {
             foreach (Radioobject obj in objects)
             {
-                GetPicture(obj.Coords, outputPath)
+                GetPicture(obj.Coords, outputPath);
             }
+        }
+        
+        /// <summary>
+        /// Returns average density of area near object
+        /// </summary>
+        /// <param name="coords"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public static double GetObjectsDensity(Coordinates coords, int radius)
+        {
+            string url = "http://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0&lon=" + coords.RAToString() + 
+                "&lat=" + coords.DecToString() + "&radius=" + radius + "&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z" +
+                "&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0&obj_sort=Distance+to+search+center&of=ascii_bar&zv_breaker=30000.0&list_limit=5&img_stamp=YES";
+            string[] source = GetHTMLCode(url);
+
+            return source.Length / (Math.PI * radius * radius);
+        }
+
+        /// <summary>
+        /// Returns the average density of specific area
+        /// </summary>
+        /// <param name="coords"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public static double GetAverageAreaDensity(Coordinates coords, int radius)
+        {
+            const int NUMBER_OF_ITERATIONS = 50;
+            Random rnd = new Random(2342345);
+            int i;
+            double averageDensity = 0;
+
+            for (i = 0; i < NUMBER_OF_ITERATIONS; i++)
+            {
+                averageDensity += GetObjectsDensity(coords + new Coordinates(rnd.Next(radius), rnd.Next(radius)), 15 * 60);
+            }
+
+            averageDensity = averageDensity / NUMBER_OF_ITERATIONS;
+
+            return averageDensity;
+        }
+
+        /// <summary>
+        /// Returns the list of radioobjects with densityRatio parameter
+        /// </summary>
+        /// <param name="objects"></param>
+        /// <param name=""></param>
+        /// <param name=""></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public static IEnumerable<Radioobject> GetDensityRatio(IEnumerable<Radioobject> objects, Coordinates centerCoords, int radius)
+        {
+            double areaDensity = GetAverageAreaDensity(centerCoords, radius);
+
+            foreach (Radioobject obj in objects)
+            {
+                obj.DensityRatio = (GetObjectsDensity(obj.Coords, 15 * 60)) / areaDensity;
+
+                yield return obj;
+            }
+        }
+        
+        private static string[] GetHTMLCode(string url)
+        {
+            HttpWebRequest request = WebRequest.CreateHttp(url);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            return (new StreamReader(response.GetResponseStream())).ReadToEnd().Split('\n');
         }
     }
 }

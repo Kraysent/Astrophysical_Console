@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\CATSQuery.cs" />
+    <Compile Include="src\DBQuery.cs" />
     <Compile Include="src\Coordinates.cs" />
     <Compile Include="src\Main.cs">
       <SubType>Form</SubType>
