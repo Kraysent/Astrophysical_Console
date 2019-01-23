@@ -1,25 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Astrophysical_Console.Coordinates">
-    <Position X="0.5" Y="0.5" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAgCAgIAAAACAAEwAECAgBAEAgAAIBAAAAAAABAEAg=</HashCode>
       <FileName>src\Coordinates.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Astrophysical_Console.Radioobject">
-    <Position X="2.25" Y="0.5" Width="1.5" />
+    <Position X="2.75" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAEAAAgBAAAAEAAAQBAABEAAAAQAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAgAAEAAAgBAAAAEAAAQBAABFAAAAQQAAAAAAAAI=</HashCode>
       <FileName>src\Radioobject.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Astrophysical_Console.DBQuery">
-    <Position X="4" Y="0.5" Width="1.5" />
+    <Position X="5" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAEAAAAAAAAAhAABAAAAAAAAAAAAgAAAAAAAAAAgA=</HashCode>
+      <HashCode>AAAAEAQAAAAACAhAABAAAAAAAAAAAAgAAAAAAAAAAgA=</HashCode>
       <FileName>src\DBQuery.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Enum Name="Astrophysical_Console.StructureType">
+    <Position X="7.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\StructureType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

@@ -30,5 +30,10 @@ namespace Astrophysical_Console
         public double DensityRatio { get => densityRatio; set => densityRatio = value; }
 
         public double SpectralIndex => (Math.Log10(FluxOn1400) - Math.Log10(FluxOn325)) / (Math.Log10(1400) - Math.Log(325));
+
+        public override string ToString()
+        {
+            return Coords.ToString() + " - " + FluxOn1400 + " - " + FluxOn325;
+        }
     }
 }
