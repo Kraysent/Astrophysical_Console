@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Astrophysical_Console
 {
@@ -16,7 +18,7 @@ namespace Astrophysical_Console
         /// <param name="frequency"></param>
         /// <param name="radius"></param>
         /// <returns></returns>
-        public static string[] Query(Coordinates coords, int frequency, int radius)
+        public static async Task<string[]> Query(Coordinates coords, int frequency, int radius)
         {
             const string URL = "https://www.sao.ru/cats/cq";
             WebRequest request = WebRequest.Create(URL);
@@ -48,12 +50,12 @@ namespace Astrophysical_Console
             request.ContentLength = data.Length;
             using (Stream stream = request.GetRequestStream())
                 stream.Write(data, 0, data.Length);
-            response = (HttpWebResponse)request.GetResponse();
+            response = (HttpWebResponse)(await request.GetResponseAsync());
             source = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
             return source.Split('\n');
         }
-        
+
         /// <summary>
         /// Returns the list of radioobjects from the link parsed from HTML code
         /// </summary>
@@ -68,10 +70,14 @@ namespace Astrophysical_Console
 
             foreach (string line in source)
             {
-                if (line.Contains("<a href =\""))
-                    link = "https://www.sao.ru/cats/" + line.Substring(13, 20);
+                if (line.Contains("<A HREF="))
+                {
+                    link = "https://www.sao.ru/cats/" + line.Split('"')[1];
+                    MessageBox.Show(link + "----" + line);
+                    break;
+                }
             }
-
+            
             output = Encoding.ASCII.GetString((new WebClient()).DownloadData(link)).Split('\n');
 
             for (i = 24; i < output.Length; i++)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Astrophysical_Console
@@ -32,26 +34,38 @@ namespace Astrophysical_Console
             Query();
         }
 
-        private void ConfirmButton_Click(object sender, EventArgs e)
+        private async void ConfirmButton_Click(object sender, EventArgs e)
         {
             Log("Entered");
-            Thread.Sleep(1000);
             string ra = raTextBox.Text;
             string dec = decTextBox.Text;
             int radius = int.Parse(radTextBox.Text);
             Coordinates coords = new Coordinates(ra, dec, ' ');
+            
+            Log("Query to cats.sao.ru, freq = 1400...");
+            processProgressBar.Style = ProgressBarStyle.Marquee;
+            string[] query1400 = await DBQuery.Query(coords, 1400, radius);
+            processProgressBar.Style = ProgressBarStyle.Blocks;
 
-            Log("Query to cats.sao.ru, freq = 1400...");            
-            string[] query1400 = DBQuery.Query(coords, 1400, radius);
-            MessageBox.Show("Query to cats.sao.ru, freq = 1400...");
             Log("Query to cats.sao.ru, freq = 325...");
-            string[] query325 = DBQuery.Query(coords, 325, radius);
+            processProgressBar.Style = ProgressBarStyle.Marquee;
+            string[] query325 = await DBQuery.Query(coords, 325, radius);
+            processProgressBar.Style = ProgressBarStyle.Blocks;
+
             Log("Parsing link, freq = 1400...");
-            string[] obj1400 = (string[])DBQuery.HTMLParseLinkToObjects(query1400);
+            processProgressBar.Style = ProgressBarStyle.Marquee;
+            string[] obj1400 = DBQuery.HTMLParseLinkToObjects(query1400).ToArray();
+            processProgressBar.Style = ProgressBarStyle.Blocks;
+
             Log("Parsing link, freq = 325...");
-            string[] obj325 = (string[])DBQuery.HTMLParseLinkToObjects(query325);
+            processProgressBar.Style = ProgressBarStyle.Marquee;
+            string[] obj325 = DBQuery.HTMLParseLinkToObjects(query325).ToArray();
+            processProgressBar.Style = ProgressBarStyle.Blocks;
+
             Log("Parsing objects...");
-            Radioobject[] objects = (Radioobject[])DBQuery.ParseRadioobjects(obj325, obj1400);
+            processProgressBar.Style = ProgressBarStyle.Marquee;
+            Radioobject[] objects = DBQuery.ParseRadioobjects(obj325, obj1400).ToArray();
+            processProgressBar.Style = ProgressBarStyle.Blocks;
             Log("Parsed!");
 
             foreach (Radioobject obj in objects)

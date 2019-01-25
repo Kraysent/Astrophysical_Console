@@ -30,6 +30,7 @@
         {
             this.LogTextBox = new System.Windows.Forms.TextBox();
             this.QueryButton = new System.Windows.Forms.Button();
+            this.processProgressBar = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // LogTextBox
@@ -51,11 +52,19 @@
             this.QueryButton.UseVisualStyleBackColor = true;
             this.QueryButton.Click += new System.EventHandler(this.QueryButton_Click);
             // 
+            // processProgressBar
+            // 
+            this.processProgressBar.Location = new System.Drawing.Point(13, 141);
+            this.processProgressBar.Name = "processProgressBar";
+            this.processProgressBar.Size = new System.Drawing.Size(449, 23);
+            this.processProgressBar.TabIndex = 2;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(474, 147);
+            this.ClientSize = new System.Drawing.Size(474, 176);
+            this.Controls.Add(this.processProgressBar);
             this.Controls.Add(this.QueryButton);
             this.Controls.Add(this.LogTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -72,6 +81,7 @@
 
         private System.Windows.Forms.TextBox LogTextBox;
         private System.Windows.Forms.Button QueryButton;
+        private System.Windows.Forms.ProgressBar processProgressBar;
     }
 }
 
