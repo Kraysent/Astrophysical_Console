@@ -26,13 +26,13 @@ namespace Astrophysical_Console
             string postData = "", source;
             byte[] data;
 
-            postData = "ALPHA_MAX=" + (coords + new Coordinates(radius / 15, 0));
-            postData += "&ALPHA_MIN=" + (coords - new Coordinates(radius / 15, 0));
+            postData = "ALPHA_MAX=" + (coords + new Coordinates(radius / 15, 0)).RAToString();
+            postData += "&ALPHA_MIN=" + (coords - new Coordinates(radius / 15, 0)).RAToString();
             postData += ((frequency == 1400) ? "&CATALOGS=&0=r&1=NVSS" : "&CATALOGS=r");
             postData += "&CATS_SORT=on";
             postData += "&CATS_ZIP=of";
-            postData += "&DELTA_MAX=" + (coords + new Coordinates(0, radius));
-            postData += "&DELTA_MIN=" + (coords - new Coordinates(0, radius));
+            postData += "&DELTA_MAX=" + (coords + new Coordinates(0, radius)).DecToString();
+            postData += "&DELTA_MIN=" + (coords - new Coordinates(0, radius)).DecToString();
             postData += "&EPOCH=2000";
             postData += "&FLUX_MAX=";
             postData += "&FLUX_MIN=";
@@ -73,7 +73,6 @@ namespace Astrophysical_Console
                 if (line.Contains("<A HREF="))
                 {
                     link = "https://www.sao.ru/cats/" + line.Split('"')[1];
-                    MessageBox.Show(link + "----" + line);
                     break;
                 }
             }
@@ -83,7 +82,7 @@ namespace Astrophysical_Console
             for (i = 24; i < output.Length; i++)
             {
                 if (output[i].IndexOf("-----") == -1)
-                    yield return output[i];
+                    yield return output[i].Replace('.', ',');
                 else
                     break;
             }
@@ -100,19 +99,19 @@ namespace Astrophysical_Console
             foreach (string obj1 in objList325)
             {
                 string[] obj1Params = obj1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                Coordinates coords1 = new Coordinates(obj1Params[2] + "+" + obj1Params[3] + "+" + obj1Params[4].Split('.')[0], 
-                    obj1Params[6] + "+" + obj1Params[7] + "+" + obj1Params[8].Split('.')[0]);
+                Coordinates coords1 = new Coordinates(obj1Params[2] + "+" + obj1Params[3] + "+" + obj1Params[4].Split(',')[0], 
+                    obj1Params[6] + "+" + obj1Params[7] + "+" + obj1Params[8].Split(',')[0]);
 
                 foreach (string obj2 in objList1400)
                 {
                     string[] obj2Params = obj2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    Coordinates coords2 = new Coordinates(obj2Params[2] + "+" + obj2Params[3] + "+" + obj2Params[4].Split('.')[0],
-                        obj2Params[6] + "+" + obj2Params[7] + "+" + obj2Params[8].Split('.')[0]);
-
-                    if (Coordinates.Distance(coords1, coords2) < 15)
+                    
+                    Coordinates coords2 = new Coordinates(obj2Params[2] + "+" + obj2Params[3] + "+" + obj2Params[4].Split(',')[0],
+                        obj2Params[6] + "+" + obj2Params[7] + "+" + obj2Params[8].Split(',')[0]);
+                    
+                    if (Coordinates.Distance(coords1, coords2) < 50)
                     {
+                        MessageBox.Show(coords1 + "\n" + coords2 + "\n" + Coordinates.Distance(coords1, coords2) + "\n\n" + string.Join(" - ", obj1Params) + "\n\n" + string.Join(" - ", obj2Params));
                         yield return new Radioobject(obj1Params[0], obj1Params[1], coords1, double.Parse(obj1Params[11]), double.Parse(obj2Params[11]));
                     }
 

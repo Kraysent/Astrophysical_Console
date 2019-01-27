@@ -36,7 +36,6 @@ namespace Astrophysical_Console
 
         private async void ConfirmButton_Click(object sender, EventArgs e)
         {
-            Log("Entered");
             string ra = raTextBox.Text;
             string dec = decTextBox.Text;
             int radius = int.Parse(radTextBox.Text);
@@ -68,13 +67,15 @@ namespace Astrophysical_Console
             processProgressBar.Style = ProgressBarStyle.Blocks;
             Log("Parsed!");
 
+            Log(objects.Length.ToString());
+
             foreach (Radioobject obj in objects)
             {
                 Log(obj.ToString());
             }
         }
 
-        private void Log(string text) => LogTextBox.Text = text + Environment.NewLine + LogTextBox.Text;
+        public void Log(string text) => LogTextBox.Text = text + Environment.NewLine + LogTextBox.Text;
 
         private void DisableButtons()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace Astrophysical_Console
 {
@@ -36,7 +37,7 @@ namespace Astrophysical_Console
         public Coordinates(string ra, string dec, char splitChar = '+')
         {
             int[] raArr = ra.Split(splitChar).Select(x => int.Parse(x)).ToArray();
-            int[] decArr = ra.Split(splitChar).Select(x => int.Parse(x)).ToArray();
+            int[] decArr = dec.Split(splitChar).Select(x => int.Parse(x)).ToArray();
 
             raH = raArr[0];
             raM = raArr[1];
@@ -174,6 +175,7 @@ namespace Astrophysical_Console
             int raSecs = (c1.RAS + c2.RAS) % 60;
             int raMins = ((c1.RAS + c2.RAS) / 60 + c1.RAM + c2.RAM) % 60;
             int raHours = (((c1.RAS + c2.RAS) / 60 + c1.RAM + c2.RAM) / 60 + c1.RAH + c2.RAH) % 24;
+
             int decSecs = (c1.DecS + c2.DecS) % 60;
             int decMins = ((c1.DecS + c2.DecS) / 60 + c1.DecM + c2.DecM) % 60;
             int decDegrees = (((c1.DecS + c2.DecS) / 60 + c1.DecM + c2.DecM) / 60 + c1.DecD + c2.DecD) % 180;
@@ -199,7 +201,7 @@ namespace Astrophysical_Console
             return new Coordinates(raHours, raMins, raSecs, decDegrees, decMins, decSecs);
         }
 
-        public static double Distance(Coordinates c1, Coordinates c2) => Math.Sqrt(Math.Pow((c2.RASeconds - c1.RASeconds) / 15, 2) + Math.Pow((c2.DecSeconds - c1.DecSeconds), 2));
+        public static double Distance(Coordinates c1, Coordinates c2) => Math.Sqrt(Math.Pow((c2.RASeconds - c1.RASeconds) * 15, 2) + Math.Pow((c2.DecSeconds - c1.DecSeconds), 2));
 
         private static int Residual(int n, int d)
         {
