@@ -56,7 +56,7 @@
             // 
             this.processProgressBar.Location = new System.Drawing.Point(13, 141);
             this.processProgressBar.Name = "processProgressBar";
-            this.processProgressBar.Size = new System.Drawing.Size(449, 23);
+            this.processProgressBar.Size = new System.Drawing.Size(449, 30);
             this.processProgressBar.TabIndex = 2;
             // 
             // Main

@@ -33,7 +33,12 @@ namespace Astrophysical_Console
 
         public override string ToString()
         {
-            return Coords.ToString() + " - " + FluxOn1400 + " - " + FluxOn325;
+            return Coords.ToString() + " - " + FluxOn1400 + " - " + FluxOn325 + " - " + SpectralIndex;
+        }
+
+        public string ToString(string delimeter = " - ")
+        {
+            return Coords.ToString() + delimeter + FluxOn1400 + delimeter + FluxOn325 + delimeter + SpectralIndex;
         }
     }
 }

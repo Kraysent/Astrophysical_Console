@@ -96,26 +96,45 @@ namespace Astrophysical_Console
         /// <returns></returns>
         public static IEnumerable<Radioobject> ParseRadioobjects(string[] objList325, string[] objList1400)
         {
+            string[] obj1Params, obj2Params;
+            Coordinates coords1, coords2;
+            double currFlux325, currFlux1400;
+
             foreach (string obj1 in objList325)
             {
-                string[] obj1Params = obj1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                Coordinates coords1 = new Coordinates(obj1Params[2] + "+" + obj1Params[3] + "+" + obj1Params[4].Split(',')[0], 
-                    obj1Params[6] + "+" + obj1Params[7] + "+" + obj1Params[8].Split(',')[0]);
+                obj1Params = obj1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                try
+                { 
+                    coords1 = new Coordinates(obj1Params[2] + "+" + obj1Params[3] + "+" + obj1Params[4].Split(',')[0], 
+                        obj1Params[6] + "+" + obj1Params[7] + "+" + obj1Params[8].Split(',')[0]);
+                }
+                catch (FormatException) { continue; }
 
                 foreach (string obj2 in objList1400)
                 {
-                    string[] obj2Params = obj2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    
-                    Coordinates coords2 = new Coordinates(obj2Params[2] + "+" + obj2Params[3] + "+" + obj2Params[4].Split(',')[0],
-                        obj2Params[6] + "+" + obj2Params[7] + "+" + obj2Params[8].Split(',')[0]);
-                    
-                    if (Coordinates.Distance(coords1, coords2) < 50)
-                    {
-                        MessageBox.Show(coords1 + "\n" + coords2 + "\n" + Coordinates.Distance(coords1, coords2) + "\n\n" + string.Join(" - ", obj1Params) + "\n\n" + string.Join(" - ", obj2Params));
-                        yield return new Radioobject(obj1Params[0], obj1Params[1], coords1, double.Parse(obj1Params[11]), double.Parse(obj2Params[11]));
-                    }
+                    obj2Params = obj2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    break;
+                    try
+                    {
+                        coords2 = new Coordinates(obj2Params[2] + "+" + obj2Params[3] + "+" + obj2Params[4].Split(',')[0],
+                            obj2Params[6] + "+" + obj2Params[7] + "+" + obj2Params[8].Split(',')[0]);
+                    }
+                    catch (FormatException) { continue; }
+
+                    if (Coordinates.Distance(coords1, coords2) <= 15)
+                    {
+                        try
+                        {
+                            currFlux325 = double.Parse(obj1Params[11]);
+                            currFlux1400 = double.Parse(obj2Params[11]);
+                        }
+                        catch (FormatException) { continue; }
+
+                        yield return new Radioobject(obj1Params[0], obj1Params[1], coords1, currFlux325, currFlux1400);
+
+                        break;
+                    }
                 }
             }
         }

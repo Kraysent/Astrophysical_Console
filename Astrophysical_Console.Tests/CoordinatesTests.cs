@@ -36,7 +36,32 @@ namespace Astrophysical_Console.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        //[TestMethod]
-        //public void 
+        [TestMethod]
+        public void RASeconds()
+        {
+            //Arrange
+            Coordinates c = new Coordinates("12+30+02", "45+00+00");
+            int expected = 45002;
+
+            //Act
+            int actual = c.RASeconds;
+
+            //Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void DecSeconds()
+        {
+            //Arrange
+            Coordinates c = new Coordinates("12+00+00", "47+02+01");
+            int expected = 169321;
+
+            //Act
+            int actual = c.DecSeconds;
+
+            //Assert
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Astrophysical_Console
     {
         Label raLabel, decLabel, radLabel;
         TextBox raTextBox, decTextBox, radTextBox;
-        Button confirmButton;
+        Button confirmButton, cancelButton;
 
         public Main()
         {
@@ -40,51 +40,91 @@ namespace Astrophysical_Console
             string dec = decTextBox.Text;
             int radius = int.Parse(radTextBox.Text);
             Coordinates coords = new Coordinates(ra, dec, ' ');
-            
+            DateTime first;
+
             Log("Query to cats.sao.ru, freq = 1400...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
+            first = DateTime.Now;
             string[] query1400 = await DBQuery.Query(coords, 1400, radius);
+            Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
 
             Log("Query to cats.sao.ru, freq = 325...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
+            first = DateTime.Now;
             string[] query325 = await DBQuery.Query(coords, 325, radius);
+            Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
 
             Log("Parsing link, freq = 1400...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
+            first = DateTime.Now;
             string[] obj1400 = DBQuery.HTMLParseLinkToObjects(query1400).ToArray();
+            Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
 
             Log("Parsing link, freq = 325...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
+            first = DateTime.Now;
             string[] obj325 = DBQuery.HTMLParseLinkToObjects(query325).ToArray();
+            Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
+
+            //File.WriteAllLines("l1400.txt", obj1400);
+            //File.WriteAllLines("l325.txt", obj325);
 
             Log("Parsing objects...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
+            first = DateTime.Now;
             Radioobject[] objects = DBQuery.ParseRadioobjects(obj325, obj1400).ToArray();
+            Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
             Log("Parsed!");
 
-            Log(objects.Length.ToString());
+            Log(objects.Length.ToString() + " objects at all.");
 
-            foreach (Radioobject obj in objects)
-            {
-                Log(obj.ToString());
-            }
+            File.WriteAllLines("objects.csv", objects.Select(x => x.ToString()));
+
+            //foreach (Radioobject obj in objects)
+            //{
+            //    Log(obj.ToString());
+            //}
         }
 
-        public void Log(string text) => LogTextBox.Text = text + Environment.NewLine + LogTextBox.Text;
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            EnableButtons();
+            NarrowWindowDown();
+        }
+
+        private void Log(string text) => LogTextBox.Text = text + Environment.NewLine + LogTextBox.Text;
 
         private void DisableButtons()
         {
             QueryButton.Enabled = false;
         }
 
+        private void EnableButtons()
+        {
+            QueryButton.Enabled = true;
+        }
+
         private void ExpandWindow()
         {
             Width += 250;
+        }
+
+        private void NarrowWindowDown()
+        {
+            Width -= 250;
+            raLabel.Hide();
+            decLabel.Hide();
+            radLabel.Hide();
+            raTextBox.Hide();
+            decTextBox.Hide();
+            radTextBox.Hide();
+            confirmButton.Hide();
+            cancelButton.Hide();
         }
 
         private void Query()
@@ -125,7 +165,14 @@ namespace Astrophysical_Console
             confirmButton.Size = new Size(decLabel.Width + decTextBox.Width, 30);
             confirmButton.Click += new EventHandler(ConfirmButton_Click);
             Controls.Add(confirmButton);
-            
+
+            cancelButton = new Button();
+            cancelButton.Text = "Cancel";
+            cancelButton.Location = new Point(Width, processProgressBar.Top);
+            cancelButton.Size = new Size(decLabel.Width + decTextBox.Width, 30);
+            cancelButton.Click += new EventHandler(CancelButton_Click);
+            Controls.Add(cancelButton);
+
             DisableButtons();
             ExpandWindow();
         }
