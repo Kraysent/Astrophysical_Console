@@ -6,32 +6,32 @@ namespace Astrophysical_Console
 {
     public class Coordinates
     {
-        private int raH;
-        private int raM;
-        private int raS;
-        private int decD;
-        private int decM;
-        private int decS;
+        private int _raH;
+        private int _raM;
+        private int _raS;
+        private int _decD;
+        private int _decM;
+        private int _decS;
 
         public Coordinates(int raH, int raM, int raS, int decD, int decM, int decS)
         {
-            this.raH = raH;
-            this.raM = raM;
-            this.raS = raS;
-            this.decD = decD;
-            this.decM = decM;
-            this.decS = decS;
+            this._raH = raH;
+            this._raM = raM;
+            this._raS = raS;
+            this._decD = decD;
+            this._decM = decM;
+            this._decS = decS;
         }
 
         public Coordinates(int raSeconds, int decSeconds)
         {
-            raH = raSeconds / 3600;
-            raM = (raSeconds % 3600) / 60;
-            raS = raSeconds - 3600 * raH - 60 * raM;
+            _raH = raSeconds / 3600;
+            _raM = (raSeconds % 3600) / 60;
+            _raS = raSeconds - 3600 * _raH - 60 * _raM;
 
-            decD = decSeconds / 3600;
-            decM = (decSeconds % 3600) / 60;
-            decS = decSeconds - decD * 3600 - decM * 60;
+            _decD = decSeconds / 3600;
+            _decM = (decSeconds % 3600) / 60;
+            _decS = decSeconds - _decD * 3600 - _decM * 60;
         }
 
         public Coordinates(string ra, string dec, char splitChar = '+')
@@ -39,12 +39,24 @@ namespace Astrophysical_Console
             int[] raArr = ra.Split(splitChar).Select(x => int.Parse(x)).ToArray();
             int[] decArr = dec.Split(splitChar).Select(x => int.Parse(x)).ToArray();
 
-            raH = raArr[0];
-            raM = raArr[1];
-            raS = raArr[2];
-            decD = decArr[0];
-            decM = decArr[1];
-            decS = decArr[2];
+            _raH = raArr[0];
+            _raM = raArr[1];
+            _raS = raArr[2];
+            _decD = decArr[0];
+            _decM = decArr[1];
+            _decS = decArr[2];
+        }
+
+        public Coordinates(string coords, char splitChar = '+')
+        {
+            int[] coords1 = coords.Split(splitChar).Select(x => int.Parse(x)).ToArray();
+
+            _raH = coords1[0];
+            _raM = coords1[1];
+            _raS = coords1[2];
+            _decD = coords1[3];
+            _decM = coords1[4];
+            _decS = coords1[5];
         }
 
         /// <summary>
@@ -52,11 +64,11 @@ namespace Astrophysical_Console
         /// </summary>
         public int RAH
         {
-            get => raH;
+            get => _raH;
             set
             {
                 if (value >= 0 && value < 24)
-                    raH = value;
+                    _raH = value;
                 else throw new InvalidOperationException("Right ascension hours value can not be more than 24 and less than 0.");
             }
         }
@@ -65,11 +77,11 @@ namespace Astrophysical_Console
         /// </summary>
         public int RAM
         {
-            get => raM;
+            get => _raM;
             set
             {
                 if (value >= 0 && value < 60)
-                    raM = value;
+                    _raM = value;
                 else throw new InvalidOperationException("Right ascension minutes value can not be more than 60 and less than 0.");
             }
         }
@@ -78,11 +90,11 @@ namespace Astrophysical_Console
         /// </summary>
         public int RAS
         {
-            get => raS;
+            get => _raS;
             set
             {
                 if (value >= 0 && value < 60)
-                    raS = value;
+                    _raS = value;
                 else throw new InvalidOperationException("Right ascension seconds value can not be more than 60 and less than 0.");
             }
         }
@@ -91,11 +103,11 @@ namespace Astrophysical_Console
         /// </summary>
         public int DecD
         {
-            get => decD;
+            get => _decD;
             set
             {
                 if (value >= 0 && value < 360)
-                    decD = value;
+                    _decD = value;
                 else throw new InvalidOperationException("Decline degrees value can not be more than 360 and less than 0.");
             }
         }
@@ -104,11 +116,11 @@ namespace Astrophysical_Console
         /// </summary>
         public int DecM
         {
-            get => decM;
+            get => _decM;
             set
             {
                 if (value >= 0 && value < 60)
-                    decM = value;
+                    _decM = value;
                 else throw new InvalidOperationException("Decline minutes value can not be more than 60 and less than 0.");
             }
         }
@@ -117,11 +129,11 @@ namespace Astrophysical_Console
         /// </summary>
         public int DecS
         {
-            get => decS;
+            get => _decS;
             set
             {
                 if (value >= 0 && value < 60)
-                    decS = value;
+                    _decS = value;
                 else throw new InvalidOperationException("Decline seconds value can not be more than 60 and less than 0.");
             }
         }
