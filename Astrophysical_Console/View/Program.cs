@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Astrophysical_Console
+namespace Astrophysical_Console.View
 {
     static class Program
     {

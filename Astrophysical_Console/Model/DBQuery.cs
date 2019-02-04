@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace Astrophysical_Console
+namespace Astrophysical_Console.Model
 {
     static class DBQuery
     {
@@ -169,7 +167,7 @@ namespace Astrophysical_Console
                             {
                                 Directory.CreateDirectory(outputPath + @"\Pictures\");
 
-                                client.DownloadFile(imgUrl, outputPath + @"\Pictures\" + coords.ToString());
+                                client.DownloadFile(imgUrl, outputPath + @"\Pictures\" + coords.ToString() + ".jpg");
                             }
                         }
                         catch (WebException) { }

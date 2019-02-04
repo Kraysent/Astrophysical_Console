@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Astrophysical_Console.Model;
 
-namespace Astrophysical_Console
+namespace Astrophysical_Console.View
 {
     public partial class Main : Form
     {
@@ -29,6 +31,9 @@ namespace Astrophysical_Console
             mainControls.Add(QueryButton);
             mainControls.Add(LogTextBox);
             mainControls.Add(processProgressBar);
+            mainControls.Add(ExportObjectsButton);
+            mainControls.Add(ImportObjectsButton);
+            mainControls.Add(GetPicturesButton);
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -47,7 +52,7 @@ namespace Astrophysical_Console
             NarrowWindowDown();
         }
 
-        private async void ConfirmButton_Click(object sender, EventArgs e)
+        private async void ConfirmButton_ClickAsync(object sender, EventArgs e)
         {
             string ra = raTextBox.Text;
             string dec = decTextBox.Text;
@@ -121,6 +126,21 @@ namespace Astrophysical_Console
                 currLine = line.Split('-');
                 currentRadioobjects.Add(new Radioobject(currLine[0], currLine[1], new Coordinates(currLine[2]), double.Parse(currLine[3]), double.Parse(currLine[4])));
             }
+
+            Log("Ojects were imported.");
+        }
+
+        private void GetPicturesButton_Click(object sender, EventArgs e)
+        {
+            Directory.CreateDirectory("Pictures");
+            Log("Downloading pictures...");
+            DBQuery.GetPicture(currentRadioobjects, @"Pictures\");
+            Log("All pictures were downloaded.");
+        }
+
+        private void CurrentListButton_Click(object sender, EventArgs e)
+        {
+            CreateDataTable();
         }
 
         //---------------------------------------------------------//
@@ -129,12 +149,16 @@ namespace Astrophysical_Console
         
         private void DisableButtons()
         {
-            QueryButton.Enabled = false;
+            foreach (Control ctrl in mainControls)
+                if (ctrl is Button)
+                    ctrl.Enabled = false;
         }
 
         private void EnableButtons()
         {
-            QueryButton.Enabled = true;
+            foreach (Control ctrl in mainControls)
+                if (ctrl is Button)
+                    ctrl.Enabled = true;
         }
 
         private void ExpandWindow()
@@ -155,10 +179,10 @@ namespace Astrophysical_Console
 
         private void Query()
         {
-            const int labelWidth = 10;
+            const int labelWidth = 110;
 
             raLabel = new Label();
-            raLabel.Width += labelWidth;
+            raLabel.Width = labelWidth;
             raLabel.Text = "Enter RA of the area: ";
             raLabel.Location = new Point(Width, 10);
             Controls.Add(raLabel);
@@ -168,7 +192,7 @@ namespace Astrophysical_Console
             Controls.Add(raTextBox);
 
             decLabel = new Label();
-            decLabel.Width += labelWidth;
+            decLabel.Width = labelWidth;
             decLabel.Text = "Enter dec of the area: ";
             decLabel.Location = new Point(Width, 40);
             Controls.Add(decLabel);
@@ -178,7 +202,7 @@ namespace Astrophysical_Console
             Controls.Add(decTextBox);
 
             radLabel = new Label();
-            radLabel.Width += labelWidth;
+            radLabel.Width = labelWidth;
             radLabel.Text = "Enter rad of the area: ";
             radLabel.Location = new Point(Width, 70);
             Controls.Add(radLabel);
@@ -191,7 +215,7 @@ namespace Astrophysical_Console
             confirmButton.Text = "Confirm";
             confirmButton.Location = new Point(Width, 100);
             confirmButton.Size = new Size(decLabel.Width + decTextBox.Width, 30);
-            confirmButton.Click += new EventHandler(ConfirmButton_Click);
+            confirmButton.Click += new EventHandler(ConfirmButton_ClickAsync);
             Controls.Add(confirmButton);
 
             cancelButton = new Button();
@@ -204,5 +228,14 @@ namespace Astrophysical_Console
             DisableButtons();
             ExpandWindow();
         }
+        
+        private void CreateDataTable()
+        {
+            if (currentRadioobjects.Count <= 0)
+            {
+                Log("No objects in memory.");
+            }
+        }
+
     }
 }

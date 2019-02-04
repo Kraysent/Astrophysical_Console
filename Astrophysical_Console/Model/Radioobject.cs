@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Astrophysical_Console
+namespace Astrophysical_Console.Model
 {
     class Radioobject
     {
@@ -28,9 +28,8 @@ namespace Astrophysical_Console
         public double FluxOn1400 { get => _fluxOn1400; set => _fluxOn1400 = value; }
         public StructureType Type { get => _type; set => _type = value; }
         public double DensityRatio { get => _densityRatio; set => _densityRatio = value; }
-
         public double SpectralIndex => (Math.Log10(FluxOn1400) - Math.Log10(FluxOn325)) / (Math.Log10(1400) - Math.Log(325));
-
+        
         public override string ToString()
         {
             return Coords.ToString() + " - " + FluxOn1400 + " - " + FluxOn325 + " - " + SpectralIndex;

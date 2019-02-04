@@ -1,4 +1,4 @@
-﻿namespace Astrophysical_Console
+﻿namespace Astrophysical_Console.View
 {
     partial class Main
     {
@@ -33,6 +33,8 @@
             this.processProgressBar = new System.Windows.Forms.ProgressBar();
             this.ExportObjectsButton = new System.Windows.Forms.Button();
             this.ImportObjectsButton = new System.Windows.Forms.Button();
+            this.GetPicturesButton = new System.Windows.Forms.Button();
+            this.CurrentListButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // LogTextBox
@@ -41,7 +43,7 @@
             this.LogTextBox.Multiline = true;
             this.LogTextBox.Name = "LogTextBox";
             this.LogTextBox.ReadOnly = true;
-            this.LogTextBox.Size = new System.Drawing.Size(300, 147);
+            this.LogTextBox.Size = new System.Drawing.Size(300, 163);
             this.LogTextBox.TabIndex = 0;
             // 
             // QueryButton
@@ -56,7 +58,7 @@
             // 
             // processProgressBar
             // 
-            this.processProgressBar.Location = new System.Drawing.Point(13, 168);
+            this.processProgressBar.Location = new System.Drawing.Point(13, 184);
             this.processProgressBar.Name = "processProgressBar";
             this.processProgressBar.Size = new System.Drawing.Size(449, 30);
             this.processProgressBar.TabIndex = 2;
@@ -81,11 +83,33 @@
             this.ImportObjectsButton.UseVisualStyleBackColor = true;
             this.ImportObjectsButton.Click += new System.EventHandler(this.ImportObjectsButton_Click);
             // 
+            // GetPicturesButton
+            // 
+            this.GetPicturesButton.Location = new System.Drawing.Point(13, 112);
+            this.GetPicturesButton.Name = "GetPicturesButton";
+            this.GetPicturesButton.Size = new System.Drawing.Size(140, 30);
+            this.GetPicturesButton.TabIndex = 5;
+            this.GetPicturesButton.Text = "Get pictures";
+            this.GetPicturesButton.UseVisualStyleBackColor = true;
+            this.GetPicturesButton.Click += new System.EventHandler(this.GetPicturesButton_Click);
+            // 
+            // CurrentListButton
+            // 
+            this.CurrentListButton.Location = new System.Drawing.Point(16, 148);
+            this.CurrentListButton.Name = "CurrentListButton";
+            this.CurrentListButton.Size = new System.Drawing.Size(140, 30);
+            this.CurrentListButton.TabIndex = 6;
+            this.CurrentListButton.Text = "Show current list";
+            this.CurrentListButton.UseVisualStyleBackColor = true;
+            this.CurrentListButton.Click += new System.EventHandler(this.CurrentListButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(474, 204);
+            this.ClientSize = new System.Drawing.Size(474, 222);
+            this.Controls.Add(this.CurrentListButton);
+            this.Controls.Add(this.GetPicturesButton);
             this.Controls.Add(this.ImportObjectsButton);
             this.Controls.Add(this.ExportObjectsButton);
             this.Controls.Add(this.processProgressBar);
@@ -108,6 +132,8 @@
         private System.Windows.Forms.ProgressBar processProgressBar;
         private System.Windows.Forms.Button ExportObjectsButton;
         private System.Windows.Forms.Button ImportObjectsButton;
+        private System.Windows.Forms.Button GetPicturesButton;
+        private System.Windows.Forms.Button CurrentListButton;
     }
 }
 
