@@ -34,6 +34,7 @@ namespace Astrophysical_Console.View
             mainControls.Add(ExportObjectsButton);
             mainControls.Add(ImportObjectsButton);
             mainControls.Add(GetPicturesButton);
+            mainControls.Add(CurrentListButton);
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -91,7 +92,7 @@ namespace Astrophysical_Console.View
             Log("Parsing objects...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
             first = DateTime.Now;
-            Radioobject[] objects = DBQuery.ParseRadioobjects(obj325, obj1400).ToArray();
+            Radioobject[] objects = (await DBQuery.ParseRadioobjects(obj325, obj1400)).ToArray();
             Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
             Log("Parsed!");
@@ -99,7 +100,6 @@ namespace Astrophysical_Console.View
             Log(objects.Length.ToString() + " objects at all.");
 
             currentRadioobjects = objects.ToList();
-            //File.WriteAllLines("objects.csv", objects.Select(x => x.ToString()));
         }
 
         private void ExportObjectsButton_Click(object sender, EventArgs e)
@@ -119,6 +119,10 @@ namespace Astrophysical_Console.View
             currentRadioobjects = new List<Radioobject>();
             fileDialog.ShowDialog();
             inputPath = fileDialog.FileName;
+
+            if (string.IsNullOrEmpty(inputPath) == true)
+                return;
+
             contents = File.ReadAllLines(inputPath);
 
             foreach (string line in contents)
@@ -127,14 +131,27 @@ namespace Astrophysical_Console.View
                 currentRadioobjects.Add(new Radioobject(currLine[0], currLine[1], new Coordinates(currLine[2]), double.Parse(currLine[3]), double.Parse(currLine[4])));
             }
 
-            Log("Ojects were imported.");
+            Log("Objects were imported.");
         }
 
-        private void GetPicturesButton_Click(object sender, EventArgs e)
+        private async void GetPicturesButton_Click(object sender, EventArgs e)
         {
-            Directory.CreateDirectory("Pictures");
+            if (currentRadioobjects == null || currentRadioobjects.Count <= 0)
+            {
+                Log("No objects to download");
+                return;
+            }
+            
             Log("Downloading pictures...");
-            DBQuery.GetPicture(currentRadioobjects, @"Pictures\");
+            int objListLength = currentRadioobjects.Count, i;
+
+            for (i = 0; i < currentRadioobjects.Count; i++)
+            {
+                Radioobject obj = currentRadioobjects[i];
+                InsertLastString("Downloaded " + i + " out of " + objListLength + ".");
+                await DBQuery.GetPicture(obj.Coords, Directory.GetCurrentDirectory() + "\\Pictures");
+            }
+
             Log("All pictures were downloaded.");
         }
 
@@ -146,7 +163,13 @@ namespace Astrophysical_Console.View
         //---------------------------------------------------------//
 
         private void Log(string text) => LogTextBox.Text = text + Environment.NewLine + LogTextBox.Text;
-        
+        private void InsertLastString(string text)
+        {
+            string[] output = LogTextBox.Text.Split('\n');
+            output[0] = text;
+            LogTextBox.Text = string.Join(Environment.NewLine, output);
+        }
+
         private void DisableButtons()
         {
             foreach (Control ctrl in mainControls)
@@ -231,11 +254,79 @@ namespace Astrophysical_Console.View
         
         private void CreateDataTable()
         {
-            if (currentRadioobjects.Count <= 0)
+            if (currentRadioobjects == null || currentRadioobjects.Count <= 0)
             {
                 Log("No objects in memory.");
+                return;
             }
-        }
 
+            int i;
+            DataTable objectsTable = new DataTable();
+            DataColumn column;
+            DataRow row;
+
+            column = new DataColumn("ID", typeof(string));
+            column.Caption = "ID";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            column = new DataColumn("Catalog", typeof(string));
+            column.Caption = "Catalog";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            column = new DataColumn("Name", typeof(string));
+            column.Caption = "Name";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            column = new DataColumn("Coordinates", typeof(string));
+            column.Caption = "Coordinates";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            column = new DataColumn("Flux on 325", typeof(string));
+            column.Caption = "Flux on 325";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            column = new DataColumn("Flux on 1400", typeof(string));
+            column.Caption = "Flux on 1400";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            column = new DataColumn("Structure type", typeof(string));
+            column.Caption = "Structure type";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            column = new DataColumn("Density ratio", typeof(string));
+            column.Caption = "Density ratio";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            column = new DataColumn("Spectral index", typeof(string));
+            column.Caption = "Spectral index";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
+            for (i = 0; i < currentRadioobjects.Count; i++)
+            {
+                Radioobject obj = currentRadioobjects[i];
+                row = objectsTable.NewRow();
+                row["ID"] = i;
+                row["Catalog"] = obj.Catalog;
+                row["Name"] = obj.Name;
+                row["Coordinates"] = obj.Coords.ToString();
+                row["Flux on 325"] = obj.FluxOn325.ToString();
+                row["Flux on 1400"] = obj.FluxOn1400.ToString();
+                row["Density ratio"] = obj.DensityRatio.ToString();
+                row["Spectral index"] = obj.SpectralIndex.ToString();
+                objectsTable.Rows.Add(row);
+            }
+
+            DataViewForm form = new DataViewForm(objectsTable);
+            form.ShowDialog();
+        }
     }
 }
