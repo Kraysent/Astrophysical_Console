@@ -145,7 +145,7 @@ namespace Astrophysical_Console.Model
         /// Converts decline coordinate to decline seconds
         /// </summary>
         public int DecSeconds => DecD * 3600 + DecM * 60 + DecS;
-        
+
         public override bool Equals(object obj1)
         {
             Coordinates obj = (Coordinates)obj1;
@@ -213,6 +213,14 @@ namespace Astrophysical_Console.Model
         }
 
         public static double Distance(Coordinates c1, Coordinates c2) => Math.Sqrt(Math.Pow((c2.RASeconds - c1.RASeconds) * 15, 2) + Math.Pow((c2.DecSeconds - c1.DecSeconds), 2));
+
+        public static Coordinates Middle(Coordinates c1, Coordinates c2)
+        {
+            int deltaRA = (c2.RASeconds - c1.RASeconds) / 2,
+                deltaDec = (c2.DecSeconds - c1.DecSeconds) / 2;
+
+            return c1 + new Coordinates(deltaRA, deltaDec);
+        }
 
         private static int Residual(int n, int d)
         {

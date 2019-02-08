@@ -1,4 +1,4 @@
-﻿using System;
+﻿using static System.Math;
 
 namespace Astrophysical_Console.Model
 {
@@ -28,7 +28,7 @@ namespace Astrophysical_Console.Model
         public double FluxOn1400 { get => _fluxOn1400; set => _fluxOn1400 = value; }
         public StructureType Type { get => _type; set => _type = value; }
         public double DensityRatio { get => _densityRatio; set => _densityRatio = value; }
-        public double SpectralIndex => (Math.Log10(FluxOn1400) - Math.Log10(FluxOn325)) / (Math.Log10(1400) - Math.Log(325));
+        public double SpectralIndex => (Log10(FluxOn1400) - Log10(FluxOn325)) / (Log10(1400) - Log(325));
         
         public override string ToString()
         {

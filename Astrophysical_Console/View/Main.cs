@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -16,6 +17,7 @@ namespace Astrophysical_Console.View
         Button confirmButton, cancelButton;
         List<Control> mainControls;
         List<Radioobject> currentRadioobjects;
+        int ListLength => currentRadioobjects.Count;
 
         //---------------------------------------------------------//
 
@@ -104,6 +106,9 @@ namespace Astrophysical_Console.View
 
         private void ExportObjectsButton_Click(object sender, EventArgs e)
         {
+            if (IsListEmptyOrNull() == true)
+                return;
+
             string[] objects = currentRadioobjects.Select(x => x.ToLongString("-")).ToArray();
 
             File.WriteAllLines("objects-" + DateTime.Now.ToString("dd-MM-yyyy") + ".csv", objects);
@@ -136,22 +141,17 @@ namespace Astrophysical_Console.View
 
         private async void GetPicturesButton_Click(object sender, EventArgs e)
         {
-            if (currentRadioobjects == null || currentRadioobjects.Count <= 0)
-            {
-                Log("No objects to download");
+            if (IsListEmptyOrNull() == true)
                 return;
-            }
             
             Log("Downloading pictures...");
-            int objListLength = currentRadioobjects.Count, i;
+            DBQuery.Progress += InsertCounterOfPictures;
+            int objListLength = currentRadioobjects.Count;
 
-            for (i = 0; i < currentRadioobjects.Count; i++)
-            {
-                Radioobject obj = currentRadioobjects[i];
-                InsertLastString("Downloaded " + i + " out of " + objListLength + ".");
-                await DBQuery.GetPicture(obj.Coords, Directory.GetCurrentDirectory() + "\\Pictures");
-            }
-
+            Directory.CreateDirectory("Pictures");
+            GetPicturesButton.Enabled = false;
+            await DBQuery.GetPicture(currentRadioobjects, Directory.GetCurrentDirectory() + "\\Pictures");
+            GetPicturesButton.Enabled = true;
             Log("All pictures were downloaded.");
         }
 
@@ -160,14 +160,39 @@ namespace Astrophysical_Console.View
             CreateDataTable();
         }
 
+        private async void GetObjectsDensityButton_Click(object sender, EventArgs e)
+        {
+            if (IsListEmptyOrNull() == true)
+            {
+                Log("List of objects is empty");
+                return;
+            }
+
+            Coordinates midCoords = currentRadioobjects[0].Coords;
+            int i;
+            
+            for (i = 1; i < currentRadioobjects.Count; i++)
+            {
+                midCoords = Coordinates.Middle(midCoords, currentRadioobjects[i].Coords);
+            }
+
+            currentRadioobjects = (await DBQuery.GetDensityRatio(currentRadioobjects, midCoords, 15000)).ToList();
+        }
+
         //---------------------------------------------------------//
 
         private void Log(string text) => LogTextBox.Text = text + Environment.NewLine + LogTextBox.Text;
-        private void InsertLastString(string text)
+        private void InsertLog(string text)
         {
             string[] output = LogTextBox.Text.Split('\n');
             output[0] = text;
             LogTextBox.Text = string.Join(Environment.NewLine, output);
+        }
+
+        private void InsertCounterOfPictures(int curr)
+        {
+            processProgressBar.Value = (int)(curr / (double)ListLength * 100);
+            InsertLog("Downloaded " + curr + " out of " + ListLength);
         }
 
         private void DisableButtons()
@@ -176,7 +201,7 @@ namespace Astrophysical_Console.View
                 if (ctrl is Button)
                     ctrl.Enabled = false;
         }
-
+        
         private void EnableButtons()
         {
             foreach (Control ctrl in mainControls)
@@ -328,5 +353,17 @@ namespace Astrophysical_Console.View
             DataViewForm form = new DataViewForm(objectsTable);
             form.ShowDialog();
         }
+
+        private bool IsListEmptyOrNull()
+        {
+            if (currentRadioobjects == null || currentRadioobjects.Count == 0)
+            {
+                Log("List of objects is empty.");
+                return true;
+            }
+            else
+                return false;
+        }
+
     }
 }

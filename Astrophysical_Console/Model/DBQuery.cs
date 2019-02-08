@@ -8,6 +8,8 @@ using System.Windows.Forms;
 
 namespace Astrophysical_Console.Model
 {
+    public delegate void ProgressHandler(int percentage);
+
     static class DBQuery
     {
         /// <summary>
@@ -172,12 +174,7 @@ namespace Astrophysical_Console.Model
                         {
                             using (WebClient client = new WebClient())
                             {
-                                //CHECK THIS
-
-                                MessageBox.Show(outputPath + "\\" + coords.ToString() + ".jpg");
                                 client.DownloadFileAsync(new Uri(imgUrl), outputPath + "\\" + coords.ToString() + ".jpg");
-                                Clipboard.SetText(imgUrl);
-                                MessageBox.Show(imgUrl);
                             }
                         }
                         catch (WebException) { }
@@ -189,11 +186,13 @@ namespace Astrophysical_Console.Model
         /// <summary>
         /// Downloads pictures for all objects in the list
         /// </summary>
-        public static async Task GetPicture(IEnumerable<Radioobject> objects, string outputPath)
+        public static async Task GetPicture(List<Radioobject> objects, string outputPath)
         {
-            foreach (Radioobject obj in objects)
+            for (int i = 0; i < objects.Count; i++)
             {
-                await GetPicture(obj.Coords, outputPath);
+                await GetPicture(objects[i].Coords, outputPath);
+                if (Progress != null)
+                    Progress(((int)(i / (double)objects.Count * 100)));
             }
         }
         
@@ -203,11 +202,12 @@ namespace Astrophysical_Console.Model
         /// <param name="coords"></param>
         /// <param name="radius"></param>
         /// <returns></returns>
-        public async static Task<double> GetObjectsDensity(Coordinates coords, int radius)
+        public static async Task<double> GetObjectsDensity(Coordinates coords, int radius)
         {
-            string url = "http://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0&lon=" + coords.RAToString() + 
-                "&lat=" + coords.DecToString() + "&radius=" + radius + "&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z" +
-                "&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0&obj_sort=Distance+to+search+center&of=ascii_bar&zv_breaker=30000.0&list_limit=5&img_stamp=YES";
+            string url = "https://ned.ipac.caltech.edu/cgi-bin/objsearch?in_csys=Equatorial&in_equinox=J2000.0&lon=" + coords.RAToString() + 
+                "&lat=" + coords.DecToString() + "&radius=" + (radius / 60) + "&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&z_constraint=Unconstrained" +
+                "&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0&obj_sort=Distance+to+search+center" +
+                "&of=ascii_tab&zv_breaker=30000.0&list_limit=5&img_stamp=YES&search_type=Near+Position+Search";
             string[] source = await GetHTMLCode(url);
 
             return source.Length / (Math.PI * radius * radius);
@@ -228,14 +228,14 @@ namespace Astrophysical_Console.Model
 
             for (i = 0; i < NUMBER_OF_ITERATIONS; i++)
             {
-                averageDensity += await GetObjectsDensity(coords + new Coordinates(rnd.Next(radius), rnd.Next(radius)), 15 * 60);
+                averageDensity += await GetObjectsDensity(coords + new Coordinates(rnd.Next(radius), rnd.Next(radius)), 2 * 60);
             }
 
             averageDensity = averageDensity / NUMBER_OF_ITERATIONS;
 
             return averageDensity;
         }
-
+        
         /// <summary>
         /// Returns the list of radioobjects with densityRatio parameter
         /// </summary>
@@ -265,5 +265,7 @@ namespace Astrophysical_Console.Model
             HttpWebResponse response = (HttpWebResponse)(await request.GetResponseAsync());
             return (await (new StreamReader(response.GetResponseStream())).ReadToEndAsync()).Split('\n');
         }
+        
+        public static event ProgressHandler Progress;
     }
 }
