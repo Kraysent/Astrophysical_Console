@@ -2,7 +2,7 @@
 
 namespace Astrophysical_Console.Model
 {
-    class Radioobject
+    public class Radioobject
     {
         private string _catalog;
         private string _name;
@@ -19,8 +19,13 @@ namespace Astrophysical_Console.Model
             Coords = coords;
             FluxOn325 = fluxOn325;
             FluxOn1400 = fluxOn1400;
+            Type = StructureType.Unchecked;
         }
-        
+
+        public Radioobject()
+        {
+        }
+
         public string Catalog { get => _catalog; set => _catalog = value; }
         public string Name { get => _name; set => _name = value; }
         public Coordinates Coords { get => _coords; set => _coords = value; }
@@ -35,9 +40,26 @@ namespace Astrophysical_Console.Model
             return Coords.ToString() + " - " + FluxOn1400 + " - " + FluxOn325 + " - " + SpectralIndex;
         }
 
+        public static StructureType ParseType(string str)
+        {
+            switch (str)
+            {
+                case "FRI":
+                    return StructureType.FRI;
+                case "FRII":
+                    return StructureType.FRII;
+                case "Undefined":
+                    return StructureType.Undefined;
+                case "Unchecked":
+                    return StructureType.Unchecked;
+                default:
+                    return StructureType.Unchecked;
+            }
+        }
+
         public string ToString(string delimeter = " - ")
         {
-            return Coords.ToString() + delimeter + FluxOn1400 + delimeter + FluxOn325 + delimeter + SpectralIndex;
+            return Coords.ToString() + delimeter + FluxOn1400 + delimeter + FluxOn325 + delimeter + SpectralIndex + delimeter + Type.ToString();
         }
 
         public string ToLongString(string delimeter = " - ")

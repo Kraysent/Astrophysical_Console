@@ -31,11 +31,11 @@
             this.LogTextBox = new System.Windows.Forms.TextBox();
             this.QueryButton = new System.Windows.Forms.Button();
             this.processProgressBar = new System.Windows.Forms.ProgressBar();
-            this.ExportObjectsButton = new System.Windows.Forms.Button();
             this.ImportObjectsButton = new System.Windows.Forms.Button();
             this.GetPicturesButton = new System.Windows.Forms.Button();
             this.CurrentListButton = new System.Windows.Forms.Button();
             this.GetObjectsDensityButton = new System.Windows.Forms.Button();
+            this.StructureButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // LogTextBox
@@ -64,19 +64,9 @@
             this.processProgressBar.Size = new System.Drawing.Size(450, 30);
             this.processProgressBar.TabIndex = 2;
             // 
-            // ExportObjectsButton
-            // 
-            this.ExportObjectsButton.Location = new System.Drawing.Point(12, 48);
-            this.ExportObjectsButton.Name = "ExportObjectsButton";
-            this.ExportObjectsButton.Size = new System.Drawing.Size(140, 30);
-            this.ExportObjectsButton.TabIndex = 3;
-            this.ExportObjectsButton.Text = "Export objects";
-            this.ExportObjectsButton.UseVisualStyleBackColor = true;
-            this.ExportObjectsButton.Click += new System.EventHandler(this.ExportObjectsButton_Click);
-            // 
             // ImportObjectsButton
             // 
-            this.ImportObjectsButton.Location = new System.Drawing.Point(12, 84);
+            this.ImportObjectsButton.Location = new System.Drawing.Point(12, 48);
             this.ImportObjectsButton.Name = "ImportObjectsButton";
             this.ImportObjectsButton.Size = new System.Drawing.Size(140, 30);
             this.ImportObjectsButton.TabIndex = 4;
@@ -86,17 +76,17 @@
             // 
             // GetPicturesButton
             // 
-            this.GetPicturesButton.Location = new System.Drawing.Point(12, 120);
+            this.GetPicturesButton.Location = new System.Drawing.Point(12, 84);
             this.GetPicturesButton.Name = "GetPicturesButton";
             this.GetPicturesButton.Size = new System.Drawing.Size(140, 30);
             this.GetPicturesButton.TabIndex = 5;
             this.GetPicturesButton.Text = "Get pictures";
             this.GetPicturesButton.UseVisualStyleBackColor = true;
-            this.GetPicturesButton.Click += new System.EventHandler(this.GetPicturesButton_Click);
+            this.GetPicturesButton.Click += new System.EventHandler(this.GetPicturesButton_ClickAsync);
             // 
             // CurrentListButton
             // 
-            this.CurrentListButton.Location = new System.Drawing.Point(12, 156);
+            this.CurrentListButton.Location = new System.Drawing.Point(12, 120);
             this.CurrentListButton.Name = "CurrentListButton";
             this.CurrentListButton.Size = new System.Drawing.Size(140, 30);
             this.CurrentListButton.TabIndex = 6;
@@ -106,29 +96,39 @@
             // 
             // GetObjectsDensityButton
             // 
-            this.GetObjectsDensityButton.Location = new System.Drawing.Point(12, 192);
+            this.GetObjectsDensityButton.Location = new System.Drawing.Point(12, 156);
             this.GetObjectsDensityButton.Name = "GetObjectsDensityButton";
             this.GetObjectsDensityButton.Size = new System.Drawing.Size(140, 30);
             this.GetObjectsDensityButton.TabIndex = 7;
             this.GetObjectsDensityButton.Text = "Get objects density";
             this.GetObjectsDensityButton.UseVisualStyleBackColor = true;
-            this.GetObjectsDensityButton.Click += new System.EventHandler(this.GetObjectsDensityButton_Click);
+            this.GetObjectsDensityButton.Click += new System.EventHandler(this.GetObjectsDensityButton_ClickAsync);
+            // 
+            // StructureButton
+            // 
+            this.StructureButton.Location = new System.Drawing.Point(12, 192);
+            this.StructureButton.Name = "StructureButton";
+            this.StructureButton.Size = new System.Drawing.Size(140, 30);
+            this.StructureButton.TabIndex = 8;
+            this.StructureButton.Text = "Open structure form";
+            this.StructureButton.UseVisualStyleBackColor = true;
+            this.StructureButton.Click += new System.EventHandler(this.StructureButton_Click);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(474, 268);
+            this.ClientSize = new System.Drawing.Size(474, 269);
+            this.Controls.Add(this.StructureButton);
             this.Controls.Add(this.GetObjectsDensityButton);
             this.Controls.Add(this.CurrentListButton);
             this.Controls.Add(this.GetPicturesButton);
             this.Controls.Add(this.ImportObjectsButton);
-            this.Controls.Add(this.ExportObjectsButton);
             this.Controls.Add(this.processProgressBar);
             this.Controls.Add(this.QueryButton);
             this.Controls.Add(this.LogTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MinimizeBox = false;
+            this.MaximizeBox = false;
             this.Name = "Main";
             this.Text = "Astrophysical Console";
             this.Load += new System.EventHandler(this.Main_Load);
@@ -142,11 +142,11 @@
         private System.Windows.Forms.TextBox LogTextBox;
         private System.Windows.Forms.Button QueryButton;
         private System.Windows.Forms.ProgressBar processProgressBar;
-        private System.Windows.Forms.Button ExportObjectsButton;
         private System.Windows.Forms.Button ImportObjectsButton;
         private System.Windows.Forms.Button GetPicturesButton;
         private System.Windows.Forms.Button CurrentListButton;
         private System.Windows.Forms.Button GetObjectsDensityButton;
+        private System.Windows.Forms.Button StructureButton;
     }
 }
 

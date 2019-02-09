@@ -3,6 +3,8 @@
     public enum StructureType
     {
         FRI,
-        FRII
+        FRII,
+        Undefined,
+        Unchecked
     }
 }

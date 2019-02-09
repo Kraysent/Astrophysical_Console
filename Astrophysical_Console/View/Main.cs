@@ -19,24 +19,32 @@ namespace Astrophysical_Console.View
         List<Radioobject> currentRadioobjects;
         int ListLength => currentRadioobjects.Count;
 
+        public delegate void ListChangedHandler();
+        public event ListChangedHandler ListChanged; 
+        
         //---------------------------------------------------------//
 
         public Main()
         {
             InitializeComponent();
             Shown += new EventHandler(Main_Shown);
+            DBQuery.Progress += InsertCounter;
+            ListChanged += SaveObjList;
         }
 
         private void Main_Shown(object sender, EventArgs e)
         {
-            mainControls = new List<Control>();
-            mainControls.Add(QueryButton);
-            mainControls.Add(LogTextBox);
-            mainControls.Add(processProgressBar);
-            mainControls.Add(ExportObjectsButton);
-            mainControls.Add(ImportObjectsButton);
-            mainControls.Add(GetPicturesButton);
-            mainControls.Add(CurrentListButton);
+            mainControls = new List<Control>
+            {
+                QueryButton,
+                LogTextBox,
+                processProgressBar,
+                ImportObjectsButton,
+                GetPicturesButton,
+                CurrentListButton,
+                GetObjectsDensityButton,
+                StructureButton
+            };
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -46,13 +54,107 @@ namespace Astrophysical_Console.View
 
         private void QueryButton_Click(object sender, EventArgs e)
         {
-            Query();
+            CreateQueryControls();
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
         {
             EnableButtons();
             NarrowWindowDown();
+        }
+        
+        private void ImportObjectsButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            string inputPath;
+            string[] contents, currLine;
+
+            currentRadioobjects = new List<Radioobject>();
+            fileDialog.ShowDialog();
+            inputPath = fileDialog.FileName;
+
+            if (string.IsNullOrEmpty(inputPath) == true)
+                return;
+
+            contents = File.ReadAllLines(inputPath);
+
+            foreach (string line in contents)
+            {
+                currLine = line.Split('-');
+                currentRadioobjects.Add(new Radioobject
+                {
+                    Catalog = currLine[0],
+                    Name = currLine[1],
+                    Coords = new Coordinates(currLine[2]),
+                    FluxOn325 = double.Parse(currLine[3]),
+                    FluxOn1400 = double.Parse(currLine[4]),
+                    Type = Radioobject.ParseType(currLine[5]),
+                    DensityRatio = double.Parse(currLine[6])
+                });
+            }
+
+            Log("Objects were imported.");
+        }
+        
+        private void CurrentListButton_Click(object sender, EventArgs e)
+        {
+            if (ListIsEmptyOrNull() == true)
+                return;
+
+            CreateDataTable();
+        }
+
+        private void StructureButton_Click(object sender, EventArgs e)
+        {
+            if (ListIsEmptyOrNull() == true)
+                return;
+
+            List<Tuple<Radioobject, Bitmap>> output = new List<Tuple<Radioobject, Bitmap>>();
+
+            if (Directory.Exists("Pictures") == false)
+            {
+                Log("No pictures downloaded.");
+                return;
+            }
+
+            foreach (Radioobject obj in currentRadioobjects)
+            {
+                try
+                {
+                    Bitmap img = new Bitmap(@"Pictures\" + obj.Coords.ToString() + ".jpg");
+                    output.Add(new Tuple<Radioobject, Bitmap>(obj, img));
+                }
+                catch
+                {
+                    output.Add(new Tuple<Radioobject, Bitmap>(obj, null));
+                }
+            }
+
+            ObjStructureForm objStructure = new ObjStructureForm(output.ToArray());
+            objStructure.ShowDialog();
+
+            output = objStructure.objImgPairs.ToList();
+
+            currentRadioobjects = output.Select(x => x.Item1).ToList();
+            ListChanged();
+        }
+
+        private async void GetPicturesButton_ClickAsync(object sender, EventArgs e)
+        {
+            if (ListIsEmptyOrNull() == true)
+                return;
+            
+            Log("Downloading pictures...");
+            int objListLength = currentRadioobjects.Count;
+
+            Directory.CreateDirectory("Pictures");
+            GetPicturesButton.Enabled = false;
+
+            await DBQuery.GetPicture(currentRadioobjects, Directory.GetCurrentDirectory() + "\\Pictures");
+
+            GetPicturesButton.Enabled = true;
+            processProgressBar.Value = 0;
+            Log("All pictures were downloaded.");
         }
 
         private async void ConfirmButton_ClickAsync(object sender, EventArgs e)
@@ -97,76 +199,18 @@ namespace Astrophysical_Console.View
             Radioobject[] objects = (await DBQuery.ParseRadioobjects(obj325, obj1400)).ToArray();
             Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
-            Log("Parsed!");
 
             Log(objects.Length.ToString() + " objects at all.");
 
             currentRadioobjects = objects.ToList();
+
+            ListChanged();
         }
 
-        private void ExportObjectsButton_Click(object sender, EventArgs e)
+        private async void GetObjectsDensityButton_ClickAsync(object sender, EventArgs e)
         {
-            if (IsListEmptyOrNull() == true)
+            if (ListIsEmptyOrNull() == true)
                 return;
-
-            string[] objects = currentRadioobjects.Select(x => x.ToLongString("-")).ToArray();
-
-            File.WriteAllLines("objects-" + DateTime.Now.ToString("dd-MM-yyyy") + ".csv", objects);
-            Log("Objects were exported.");
-        }
-
-        private void ImportObjectsButton_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            string inputPath;
-            string[] contents, currLine;
-
-            currentRadioobjects = new List<Radioobject>();
-            fileDialog.ShowDialog();
-            inputPath = fileDialog.FileName;
-
-            if (string.IsNullOrEmpty(inputPath) == true)
-                return;
-
-            contents = File.ReadAllLines(inputPath);
-
-            foreach (string line in contents)
-            {
-                currLine = line.Split('-');
-                currentRadioobjects.Add(new Radioobject(currLine[0], currLine[1], new Coordinates(currLine[2]), double.Parse(currLine[3]), double.Parse(currLine[4])));
-            }
-
-            Log("Objects were imported.");
-        }
-
-        private async void GetPicturesButton_Click(object sender, EventArgs e)
-        {
-            if (IsListEmptyOrNull() == true)
-                return;
-            
-            Log("Downloading pictures...");
-            DBQuery.Progress += InsertCounterOfPictures;
-            int objListLength = currentRadioobjects.Count;
-
-            Directory.CreateDirectory("Pictures");
-            GetPicturesButton.Enabled = false;
-            await DBQuery.GetPicture(currentRadioobjects, Directory.GetCurrentDirectory() + "\\Pictures");
-            GetPicturesButton.Enabled = true;
-            Log("All pictures were downloaded.");
-        }
-
-        private void CurrentListButton_Click(object sender, EventArgs e)
-        {
-            CreateDataTable();
-        }
-
-        private async void GetObjectsDensityButton_Click(object sender, EventArgs e)
-        {
-            if (IsListEmptyOrNull() == true)
-            {
-                Log("List of objects is empty");
-                return;
-            }
 
             Coordinates midCoords = currentRadioobjects[0].Coords;
             int i;
@@ -177,22 +221,38 @@ namespace Astrophysical_Console.View
             }
 
             currentRadioobjects = (await DBQuery.GetDensityRatio(currentRadioobjects, midCoords, 15000)).ToList();
+
+            ListChanged();
         }
 
         //---------------------------------------------------------//
 
-        private void Log(string text) => LogTextBox.Text = text + Environment.NewLine + LogTextBox.Text;
+        private void Log(string text) => LogTextBox.Invoke(new Action(() => LogTextBox.Text = text + Environment.NewLine + LogTextBox.Text));
+
         private void InsertLog(string text)
         {
             string[] output = LogTextBox.Text.Split('\n');
             output[0] = text;
-            LogTextBox.Text = string.Join(Environment.NewLine, output);
+            LogTextBox.Invoke(new Action(() => LogTextBox.Text = string.Join(Environment.NewLine, output)));
         }
 
-        private void InsertCounterOfPictures(int curr)
+        private void InsertCounter(string process, int curr, int length)
         {
-            processProgressBar.Value = (int)(curr / (double)ListLength * 100);
-            InsertLog("Downloaded " + curr + " out of " + ListLength);
+            curr++;
+            processProgressBar.Invoke(new Action(() => processProgressBar.Value = (int)(curr / (double)length * 100)));
+            InsertLog(process + ": " + curr + " out of " + length);
+        }
+
+        private void SaveObjList()
+        {
+            if (ListIsEmptyOrNull() == true)
+                return;
+
+            string[] objects = currentRadioobjects.Select(x => x.ToLongString("-")).ToArray();
+            string fileName = "objects-" + DateTime.Now.ToString("dd-MM-yyyy") + ".csv";
+
+            File.WriteAllLines(fileName, objects);
+            Log("Objects were saved to \\" + fileName + ".");
         }
 
         private void DisableButtons()
@@ -208,7 +268,7 @@ namespace Astrophysical_Console.View
                 if (ctrl is Button)
                     ctrl.Enabled = true;
         }
-
+        
         private void ExpandWindow()
         {
             Width += 250;
@@ -225,7 +285,7 @@ namespace Astrophysical_Console.View
                 ctrl.Show();
         }
 
-        private void Query()
+        private void CreateQueryControls()
         {
             const int labelWidth = 110;
 
@@ -279,12 +339,6 @@ namespace Astrophysical_Console.View
         
         private void CreateDataTable()
         {
-            if (currentRadioobjects == null || currentRadioobjects.Count <= 0)
-            {
-                Log("No objects in memory.");
-                return;
-            }
-
             int i;
             DataTable objectsTable = new DataTable();
             DataColumn column;
@@ -345,6 +399,7 @@ namespace Astrophysical_Console.View
                 row["Coordinates"] = obj.Coords.ToString();
                 row["Flux on 325"] = obj.FluxOn325.ToString();
                 row["Flux on 1400"] = obj.FluxOn1400.ToString();
+                row["Structure type"] = obj.Type.ToString();
                 row["Density ratio"] = obj.DensityRatio.ToString();
                 row["Spectral index"] = obj.SpectralIndex.ToString();
                 objectsTable.Rows.Add(row);
@@ -354,7 +409,7 @@ namespace Astrophysical_Console.View
             form.ShowDialog();
         }
 
-        private bool IsListEmptyOrNull()
+        private bool ListIsEmptyOrNull()
         {
             if (currentRadioobjects == null || currentRadioobjects.Count == 0)
             {
@@ -364,6 +419,5 @@ namespace Astrophysical_Console.View
             else
                 return false;
         }
-
     }
 }

@@ -8,10 +8,12 @@ using System.Windows.Forms;
 
 namespace Astrophysical_Console.Model
 {
-    public delegate void ProgressHandler(int percentage);
-
     static class DBQuery
     {
+        public delegate void ProgressHandler(string process, int curr, int length);
+
+        public static event ProgressHandler Progress;
+
         /// <summary>
         /// Gets the HTML code of page from www.sao.ru with specific coordinates
         /// </summary>
@@ -98,15 +100,20 @@ namespace Astrophysical_Console.Model
         public static async Task<List<Radioobject>> ParseRadioobjects(string[] objList325, string[] objList1400)
         {
             string[] obj1Params, obj2Params;
-            Coordinates coords1, coords2;
+            string obj1, obj2;
             double currFlux325, currFlux1400;
+            int i, j;
+            Coordinates coords1, coords2;
             List<Radioobject> output = new List<Radioobject>();
 
             await Task.Run(() =>
             {
-                foreach (string obj1 in objList325)
+                for (i = 0; i < objList325.Length; i++)
                 {
+                    obj1 = objList325[i];
                     obj1Params = obj1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    Progress("Parsing radioobjects", i, objList325.Length);
 
                     try
                     {
@@ -115,8 +122,9 @@ namespace Astrophysical_Console.Model
                     }
                     catch (FormatException) { continue; }
 
-                    foreach (string obj2 in objList1400)
+                    for (j = 0; j < objList1400.Length; j++)
                     {
+                        obj2 = objList1400[j];
                         obj2Params = obj2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                         try
@@ -145,6 +153,43 @@ namespace Astrophysical_Console.Model
 
             return output;
         }
+        
+        /// <summary>
+        /// Downloads pictures for all objects in the list
+        /// </summary>
+        public static async Task GetPicture(List<Radioobject> objects, string outputPath)
+        {
+            for (int i = 0; i < objects.Count; i++)
+            {
+                await GetPicture(objects[i].Coords, outputPath);
+                if (Progress != null)
+                    Progress("Downloading picture", ((int)(i / (double)objects.Count * 100)), objects.Count);
+            }
+        }
+        
+        /// <summary>
+        /// Returns the list of radioobjects with densityRatio parameter
+        /// </summary>
+        /// <param name="objects"></param>
+        /// <param name=""></param>
+        /// <param name=""></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public static async Task<IEnumerable<Radioobject>> GetDensityRatio(List<Radioobject> objects, Coordinates centerCoords, int radius)
+        {
+            double areaDensity = await GetAverageAreaDensity(centerCoords, radius);
+            int i;
+
+            for (i = 0; i < objects.Count; i++)
+            {
+                Progress("Counting density ratio", i, objects.Count);
+                objects[i].DensityRatio = (await GetObjectsDensity(objects[i].Coords, 15 * 60)) / areaDensity;
+            }
+
+            return objects;
+        }
+        
+        //-------------------------------------------------//
 
         /// <summary>
         /// Downloads single picture to the specific directory 
@@ -184,19 +229,6 @@ namespace Astrophysical_Console.Model
         }
 
         /// <summary>
-        /// Downloads pictures for all objects in the list
-        /// </summary>
-        public static async Task GetPicture(List<Radioobject> objects, string outputPath)
-        {
-            for (int i = 0; i < objects.Count; i++)
-            {
-                await GetPicture(objects[i].Coords, outputPath);
-                if (Progress != null)
-                    Progress(((int)(i / (double)objects.Count * 100)));
-            }
-        }
-        
-        /// <summary>
         /// Returns average density of area near object
         /// </summary>
         /// <param name="coords"></param>
@@ -222,12 +254,13 @@ namespace Astrophysical_Console.Model
         public static async Task<double> GetAverageAreaDensity(Coordinates coords, int radius)
         {
             const int NUMBER_OF_ITERATIONS = 50;
-            Random rnd = new Random(2342345);
+            Random rnd = new Random();
             int i;
             double averageDensity = 0;
 
             for (i = 0; i < NUMBER_OF_ITERATIONS; i++)
             {
+                Progress("Counting area density", i, NUMBER_OF_ITERATIONS);
                 averageDensity += await GetObjectsDensity(coords + new Coordinates(rnd.Next(radius), rnd.Next(radius)), 2 * 60);
             }
 
@@ -236,36 +269,11 @@ namespace Astrophysical_Console.Model
             return averageDensity;
         }
         
-        /// <summary>
-        /// Returns the list of radioobjects with densityRatio parameter
-        /// </summary>
-        /// <param name="objects"></param>
-        /// <param name=""></param>
-        /// <param name=""></param>
-        /// <param name="radius"></param>
-        /// <returns></returns>
-        public static async Task<IEnumerable<Radioobject>> GetDensityRatio(IEnumerable<Radioobject> objects, Coordinates centerCoords, int radius)
-        {
-            double areaDensity = await GetAverageAreaDensity(centerCoords, radius);
-            List<Radioobject> output = new List<Radioobject>();
-
-            foreach (Radioobject obj in objects)
-            {
-                obj.DensityRatio = (await GetObjectsDensity(obj.Coords, 15 * 60)) / areaDensity;
-
-                output.Add(obj);
-            }
-
-            return output;
-        }
-        
         private async static Task<string[]> GetHTMLCode(string url)
         {
             HttpWebRequest request = WebRequest.CreateHttp(url);
             HttpWebResponse response = (HttpWebResponse)(await request.GetResponseAsync());
             return (await (new StreamReader(response.GetResponseStream())).ReadToEndAsync()).Split('\n');
         }
-        
-        public static event ProgressHandler Progress;
     }
 }
