@@ -11,7 +11,6 @@ namespace Astrophysical_Console.Model
     static class DBQuery
     {
         public delegate void ProgressHandler(string process, int curr, int length);
-
         public static event ProgressHandler Progress;
 
         /// <summary>
@@ -24,10 +23,7 @@ namespace Astrophysical_Console.Model
         public static async Task<string[]> Query(Coordinates coords, int frequency, int radius)
         {
             const string URL = "https://www.sao.ru/cats/cq";
-            WebRequest request = WebRequest.Create(URL);
-            WebResponse response;
-            string postData = "", source;
-            byte[] data;
+            string postData = "";
 
             postData = "ALPHA_MAX=" + (coords + new Coordinates(radius / 15, 0)).RAToString();
             postData += "&ALPHA_MIN=" + (coords - new Coordinates(radius / 15, 0)).RAToString();
@@ -46,17 +42,8 @@ namespace Astrophysical_Console.Model
             postData += "&GLON_MAX=";
             postData += "&GLON_MIN=";
             postData += "&OUT_FORMAT=table";
-
-            data = Encoding.ASCII.GetBytes(postData);
-            request.Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = data.Length;
-            using (Stream stream = request.GetRequestStream())
-                stream.Write(data, 0, data.Length);
-            response = (HttpWebResponse)(await request.GetResponseAsync());
-            source = new StreamReader(response.GetResponseStream()).ReadToEnd();
-
-            return source.Split('\n');
+            
+            return await GetHTMLCode(URL, postData);
         }
 
         /// <summary>
@@ -65,11 +52,12 @@ namespace Astrophysical_Console.Model
         /// <param name="source"></param>
         /// <param name="coords"></param>
         /// <returns></returns>
-        public static IEnumerable<string> HTMLParseLinkToObjects(string[] source)
+        public static List<string> HTMLParseLinkToObjects(string[] source)
         {
             string link = "";
             string[] output;
             int i;
+            List<string> result = new List<string>();
 
             foreach (string line in source)
             {
@@ -85,10 +73,12 @@ namespace Astrophysical_Console.Model
             for (i = 24; i < output.Length; i++)
             {
                 if (output[i].IndexOf("-----") == -1)
-                    yield return output[i].Replace('.', ',');
+                    result.Add(output[i].Replace('.', ','));
                 else
                     break;
             }
+
+            return result;
         }
 
         /// <summary>
@@ -162,8 +152,7 @@ namespace Astrophysical_Console.Model
             for (int i = 0; i < objects.Count; i++)
             {
                 await GetPicture(objects[i].Coords, outputPath);
-                if (Progress != null)
-                    Progress("Downloading picture", ((int)(i / (double)objects.Count * 100)), objects.Count);
+                Progress("Downloading picture", i, objects.Count);
             }
         }
         
@@ -175,7 +164,7 @@ namespace Astrophysical_Console.Model
         /// <param name=""></param>
         /// <param name="radius"></param>
         /// <returns></returns>
-        public static async Task<IEnumerable<Radioobject>> GetDensityRatio(List<Radioobject> objects, Coordinates centerCoords, int radius)
+        public static async Task<List<Radioobject>> GetDensityRatio(List<Radioobject> objects, Coordinates centerCoords, int radius)
         {
             double areaDensity = await GetAverageAreaDensity(centerCoords, radius);
             int i;
@@ -274,6 +263,25 @@ namespace Astrophysical_Console.Model
             HttpWebRequest request = WebRequest.CreateHttp(url);
             HttpWebResponse response = (HttpWebResponse)(await request.GetResponseAsync());
             return (await (new StreamReader(response.GetResponseStream())).ReadToEndAsync()).Split('\n');
+        }
+        
+        private async static Task<string[]> GetHTMLCode(string url, string postData)
+        {
+            byte[] data;
+            string source;
+            WebRequest request = WebRequest.Create(url);
+            HttpWebResponse response;
+
+            data = Encoding.ASCII.GetBytes(postData);
+            request.Method = "POST";
+            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentLength = data.Length;
+            using (Stream stream = request.GetRequestStream())
+                stream.Write(data, 0, data.Length);
+            response = (HttpWebResponse)(await request.GetResponseAsync());
+            source = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+            return source.Split('\n');
         }
     }
 }

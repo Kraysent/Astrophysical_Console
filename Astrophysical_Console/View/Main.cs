@@ -220,7 +220,14 @@ namespace Astrophysical_Console.View
                 midCoords = Coordinates.Middle(midCoords, currentRadioobjects[i].Coords);
             }
 
-            currentRadioobjects = (await DBQuery.GetDensityRatio(currentRadioobjects, midCoords, 15000)).ToList();
+            try
+            {
+                currentRadioobjects = (await DBQuery.GetDensityRatio(currentRadioobjects, midCoords, 15000)).ToList();
+            }
+            catch
+            {
+                Log("Server error, try again.");
+            }
 
             ListChanged();
         }

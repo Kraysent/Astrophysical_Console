@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Astrophysical_Console
 {
-    public class Coordinates
+    public struct Coordinates
     {
         private int _raH;
         private int _raM;
