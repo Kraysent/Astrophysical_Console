@@ -1,6 +1,6 @@
 ﻿using static System.Math;
 
-namespace Astrophysical_Console.Model
+namespace Astrophysical_Console
 {
     public class Radioobject
     {

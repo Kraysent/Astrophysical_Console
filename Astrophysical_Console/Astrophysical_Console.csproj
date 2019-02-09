@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\DBQuery.cs" />
-    <Compile Include="Model\Coordinates.cs" />
+    <Compile Include="src\Coordinates.cs" />
     <Compile Include="View\DataViewForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,10 +65,10 @@
     <Compile Include="View\ObjStructureForm.Designer.cs">
       <DependentUpon>ObjStructureForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="View\Program.cs" />
+    <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Model\Radioobject.cs" />
-    <Compile Include="Model\StructureType.cs" />
+    <Compile Include="src\Radioobject.cs" />
+    <Compile Include="src\StructureType.cs" />
     <EmbeddedResource Include="View\DataViewForm.resx">
       <DependentUpon>DataViewForm.cs</DependentUpon>
     </EmbeddedResource>

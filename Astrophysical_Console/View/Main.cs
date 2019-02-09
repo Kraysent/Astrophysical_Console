@@ -20,7 +20,7 @@ namespace Astrophysical_Console.View
         int ListLength => currentRadioobjects.Count;
 
         public delegate void ListChangedHandler();
-        public event ListChangedHandler ListChanged; 
+        public event ListChangedHandler ListChanged;
         
         //---------------------------------------------------------//
 

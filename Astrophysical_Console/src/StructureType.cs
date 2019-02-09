@@ -1,4 +1,4 @@
-﻿namespace Astrophysical_Console.Model
+﻿namespace Astrophysical_Console
 {
     public enum StructureType
     {

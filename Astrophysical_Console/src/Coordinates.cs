@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Astrophysical_Console.Model
+namespace Astrophysical_Console
 {
     public class Coordinates
     {
