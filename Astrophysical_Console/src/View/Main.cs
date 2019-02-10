@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
@@ -21,7 +20,7 @@ namespace Astrophysical_Console.View
 
         public delegate void ListChangedHandler();
         public event ListChangedHandler ListChanged;
-        
+
         //---------------------------------------------------------//
 
         public Main()
