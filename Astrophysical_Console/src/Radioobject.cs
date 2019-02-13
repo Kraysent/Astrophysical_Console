@@ -1,9 +1,12 @@
-﻿using static System.Math;
+﻿using System.Windows.Forms;
+using static System.Math;
 
 namespace Astrophysical_Console
 {
     public class Radioobject
     {
+        public const string STANDART_STRING_DELIMETER = "|";
+
         private string _catalog;
         private string _name;
         private Coordinates _coords;
@@ -24,6 +27,7 @@ namespace Astrophysical_Console
 
         public Radioobject()
         {
+
         }
 
         public string Catalog { get => _catalog; set => _catalog = value; }
@@ -33,11 +37,11 @@ namespace Astrophysical_Console
         public double FluxOn1400 { get => _fluxOn1400; set => _fluxOn1400 = value; }
         public StructureType Type { get => _type; set => _type = value; }
         public double DensityRatio { get => _densityRatio; set => _densityRatio = value; }
-        public double SpectralIndex => (Log10(FluxOn1400) - Log10(FluxOn325)) / (Log10(1400) - Log(325));
-        
+        public double SpectralIndex => (Log10(FluxOn1400) - Log10(FluxOn325)) / (Log10(1400) - Log10(325));
+
         public override string ToString()
         {
-            return Coords.ToString() + " - " + FluxOn1400 + " - " + FluxOn325 + " - " + SpectralIndex;
+            return Coords.ToString() + STANDART_STRING_DELIMETER + FluxOn1400 + STANDART_STRING_DELIMETER + FluxOn325 + STANDART_STRING_DELIMETER + SpectralIndex;
         }
 
         public static StructureType ParseType(string str)
@@ -57,12 +61,12 @@ namespace Astrophysical_Console
             }
         }
 
-        public string ToString(string delimeter = " - ")
+        public string ToString(string delimeter = STANDART_STRING_DELIMETER)
         {
             return Coords.ToString() + delimeter + FluxOn1400 + delimeter + FluxOn325 + delimeter + SpectralIndex + delimeter + Type.ToString();
         }
 
-        public string ToLongString(string delimeter = " - ")
+        public string ToLongString(string delimeter = STANDART_STRING_DELIMETER)
         {
             return Catalog + delimeter + Name + delimeter + Coords.ToString() + delimeter
                 + FluxOn325 + delimeter + FluxOn1400 + delimeter + Type.ToString() + delimeter + DensityRatio;

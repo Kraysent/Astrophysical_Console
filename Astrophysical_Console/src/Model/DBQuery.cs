@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -11,6 +12,8 @@ namespace Astrophysical_Console.Model
     static class DBQuery
     {
         public delegate void ProgressHandler(string process, int curr, int length);
+        public delegate void ProcessEndedHandler(string process);
+        public static event ProcessEndedHandler ProcessEnded;
         public static event ProgressHandler Progress;
 
         /// <summary>
@@ -149,10 +152,30 @@ namespace Astrophysical_Console.Model
         /// </summary>
         public static async Task GetPicture(List<Radioobject> objects, string outputPath)
         {
-            for (int i = 0; i < objects.Count; i++)
+            Bitmap currPicture;
+            string currPath;
+            int i;
+
+            for (i = 0; i < objects.Count; i++)
             {
+                currPath = $"{outputPath}\\{objects[i].Coords.ToString()}.jpg";
+
                 await GetPicture(objects[i].Coords, outputPath);
-                Progress("Downloading picture", i, objects.Count);
+                Progress("Downloading pictures", i, objects.Count);
+            }
+
+            //ProcessEnded("Downloading pictures");
+
+            for (i = 0; i < objects.Count; i++)
+            {
+                currPath = $"{outputPath}\\{objects[i].Coords.ToString()}.jpg";
+                File.Copy(currPath, currPath + "1");
+                currPicture = new Bitmap(currPath + "1");
+                currPicture = await MinimizePicture(currPicture);
+                File.Delete(currPath);
+                currPicture.Save(currPath);
+                currPicture.Dispose();
+                //File.Delete(currPath + "1");
             }
         }
         
@@ -177,7 +200,7 @@ namespace Astrophysical_Console.Model
 
             return objects;
         }
-        
+
         //-------------------------------------------------//
 
         /// <summary>
@@ -208,13 +231,41 @@ namespace Astrophysical_Console.Model
                         {
                             using (WebClient client = new WebClient())
                             {
-                                client.DownloadFileAsync(new Uri(imgUrl), outputPath + "\\" + coords.ToString() + ".jpg");
+                                await client.DownloadFileTaskAsync(new Uri(imgUrl), outputPath + "\\" + coords.ToString() + ".jpg");
                             }
                         }
                         catch (WebException) { }
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Minimizes single picture to 24x24 format
+        /// </summary>
+        /// <param name="picture"></param>
+        /// <returns></returns>
+        public static async Task<Bitmap> MinimizePicture(Bitmap img)
+        {
+            const int squareSide = 12, squareNumber = 24;
+            int i, j, currX, currY;
+            Bitmap newImg = new Bitmap(squareNumber, squareNumber);
+
+            await Task.Run(() =>
+            {
+                for (i = 0; i < squareNumber; i++)
+                {
+                    for (j = 0; j < squareNumber; j++)
+                    {
+                        currX = i * squareSide + squareSide / 2;
+                        currY = j * squareSide + squareSide / 2;
+                        Color currPixel = img.GetPixel(currX, currY);
+                        newImg.SetPixel(i, j, currPixel);
+                    }
+                }
+            });
+
+            return newImg;
         }
 
         /// <summary>
@@ -258,7 +309,7 @@ namespace Astrophysical_Console.Model
             return averageDensity;
         }
         
-        private async static Task<string[]> GetHTMLCode(string url)
+        private static async Task<string[]> GetHTMLCode(string url)
         {
             HttpWebRequest request = WebRequest.CreateHttp(url);
             HttpWebResponse response = (HttpWebResponse)(await request.GetResponseAsync());

@@ -79,7 +79,7 @@ namespace Astrophysical_Console.View
 
             foreach (string line in contents)
             {
-                currLine = line.Split('-');
+                currLine = line.Split(char.Parse(Radioobject.STANDART_STRING_DELIMETER));
                 currentRadioobjects.Add(new Radioobject
                 {
                     Catalog = currLine[0],
@@ -254,7 +254,7 @@ namespace Astrophysical_Console.View
             if (ListIsEmptyOrNull() == true)
                 return;
 
-            string[] objects = currentRadioobjects.Select(x => x.ToLongString("-")).ToArray();
+            string[] objects = currentRadioobjects.Select(x => x.ToLongString("|")).ToArray();
             string fileName = "objects-" + DateTime.Now.ToString("dd-MM-yyyy") + ".csv";
 
             File.WriteAllLines(fileName, objects);
