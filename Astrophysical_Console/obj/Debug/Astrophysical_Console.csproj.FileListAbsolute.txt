@@ -10,3 +10,4 @@ D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical
 D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.View.DataViewForm.resources
 D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.View.Main.resources
 D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.View.ObjStructureForm.resources
+D:\Coding\C#\Astrophysical_Console\Astrophysical_Console\obj\Debug\Astrophysical_Console.View.ExtendedMessageBox.resources

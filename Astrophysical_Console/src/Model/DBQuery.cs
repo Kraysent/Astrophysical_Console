@@ -152,31 +152,25 @@ namespace Astrophysical_Console.Model
         /// </summary>
         public static async Task GetPicture(List<Radioobject> objects, string outputPath)
         {
+            const string ProcessName = "Downloading pictures";
+
             Bitmap currPicture;
             string currPath;
             int i;
-
+            
             for (i = 0; i < objects.Count; i++)
             {
                 currPath = $"{outputPath}\\{objects[i].Coords.ToString()}.jpg";
 
-                await GetPicture(objects[i].Coords, outputPath);
-                Progress("Downloading pictures", i, objects.Count);
-            }
-
-            //ProcessEnded("Downloading pictures");
-
-            for (i = 0; i < objects.Count; i++)
-            {
-                currPath = $"{outputPath}\\{objects[i].Coords.ToString()}.jpg";
-                File.Copy(currPath, currPath + "1");
-                currPicture = new Bitmap(currPath + "1");
+                currPicture = await GetPicture(objects[i].Coords, outputPath);
+                if (currPicture == null)
+                    continue;
                 currPicture = await MinimizePicture(currPicture);
-                File.Delete(currPath);
                 currPicture.Save(currPath);
-                currPicture.Dispose();
-                //File.Delete(currPath + "1");
+                Progress(ProcessName, i, objects.Count);
             }
+
+            //ProcessEnded(ProcessName);
         }
         
         /// <summary>
@@ -208,7 +202,7 @@ namespace Astrophysical_Console.Model
         /// </summary>
         /// <param name="coords"></param>
         /// <param name="outputPath"></param>
-        public static async Task GetPicture(Coordinates coords, string outputPath)
+        public static async Task<Bitmap> GetPicture(Coordinates coords, string outputPath)
         {
             string url = "https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Position=" + coords.ToString() + "&survey=NVSS&coordinates=J2000&coordinates=" +
                 "&projection=Tan&pixels=300&size=0.1&float=on&scaling=Log&resolver=SIMBAD-NED&Sampler=_skip_&Deedger=_skip_&rotation=&Smooth=" +
@@ -217,6 +211,7 @@ namespace Astrophysical_Console.Model
             string[] source = await GetHTMLCode(url);
             string imgUrl;
             int i;
+            Bitmap image = new Bitmap(10, 10);
 
             for (i = 0; i < source.Length; i++)
             {
@@ -231,13 +226,18 @@ namespace Astrophysical_Console.Model
                         {
                             using (WebClient client = new WebClient())
                             {
-                                await client.DownloadFileTaskAsync(new Uri(imgUrl), outputPath + "\\" + coords.ToString() + ".jpg");
+                                image = new Bitmap(new MemoryStream(await client.DownloadDataTaskAsync(imgUrl)));
                             }
                         }
                         catch (WebException) { }
                     }
                 }
             }
+
+            if (image.Size != new Size(10, 10))
+                return image;
+            else
+                return null;
         }
 
         /// <summary>
