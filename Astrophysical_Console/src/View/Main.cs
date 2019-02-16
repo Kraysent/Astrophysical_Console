@@ -181,14 +181,14 @@ namespace Astrophysical_Console.View
             Log("Parsing link, freq = 1400...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
             first = DateTime.Now;
-            string[] obj1400 = DBQuery.HTMLParseLinkToObjects(query1400).ToArray();
+            string[] obj1400 = (await DBQuery.HTMLParseLinkToObjects(query1400)).ToArray();
             Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
 
             Log("Parsing link, freq = 325...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
             first = DateTime.Now;
-            string[] obj325 = DBQuery.HTMLParseLinkToObjects(query325).ToArray();
+            string[] obj325 = (await DBQuery.HTMLParseLinkToObjects(query325)).ToArray();
             Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
 

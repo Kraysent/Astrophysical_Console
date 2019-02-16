@@ -55,7 +55,7 @@ namespace Astrophysical_Console.Model
         /// <param name="source"></param>
         /// <param name="coords"></param>
         /// <returns></returns>
-        public static List<string> HTMLParseLinkToObjects(string[] source)
+        public static async Task<List<string>> HTMLParseLinkToObjects(string[] source)
         {
             string link = "";
             string[] output;
@@ -71,7 +71,7 @@ namespace Astrophysical_Console.Model
                 }
             }
             
-            output = Encoding.ASCII.GetString((new WebClient()).DownloadData(link)).Split('\n');
+            output = Encoding.ASCII.GetString(await (new WebClient()).DownloadDataTaskAsync(link)).Split('\n');
 
             for (i = 24; i < output.Length; i++)
             {
@@ -202,7 +202,7 @@ namespace Astrophysical_Console.Model
         /// </summary>
         /// <param name="coords"></param>
         /// <param name="outputPath"></param>
-        public static async Task<Bitmap> GetPicture(Coordinates coords, string outputPath)
+        private static async Task<Bitmap> GetPicture(Coordinates coords, string outputPath)
         {
             string url = "https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Position=" + coords.ToString() + "&survey=NVSS&coordinates=J2000&coordinates=" +
                 "&projection=Tan&pixels=300&size=0.1&float=on&scaling=Log&resolver=SIMBAD-NED&Sampler=_skip_&Deedger=_skip_&rotation=&Smooth=" +
@@ -245,7 +245,7 @@ namespace Astrophysical_Console.Model
         /// </summary>
         /// <param name="picture"></param>
         /// <returns></returns>
-        public static async Task<Bitmap> MinimizePicture(Bitmap img)
+        private static async Task<Bitmap> MinimizePicture(Bitmap img)
         {
             const int squareSide = 12, squareNumber = 24;
             int i, j, currX, currY;
@@ -274,7 +274,7 @@ namespace Astrophysical_Console.Model
         /// <param name="coords"></param>
         /// <param name="radius"></param>
         /// <returns></returns>
-        public static async Task<double> GetObjectsDensity(Coordinates coords, int radius)
+        private static async Task<double> GetObjectsDensity(Coordinates coords, int radius)
         {
             string url = "https://ned.ipac.caltech.edu/cgi-bin/objsearch?in_csys=Equatorial&in_equinox=J2000.0&lon=" + coords.RAToString() + 
                 "&lat=" + coords.DecToString() + "&radius=" + (radius / 60) + "&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&z_constraint=Unconstrained" +
@@ -291,7 +291,7 @@ namespace Astrophysical_Console.Model
         /// <param name="coords"></param>
         /// <param name="radius"></param>
         /// <returns></returns>
-        public static async Task<double> GetAverageAreaDensity(Coordinates coords, int radius)
+        private static async Task<double> GetAverageAreaDensity(Coordinates coords, int radius)
         {
             const int NUMBER_OF_ITERATIONS = 50;
             Random rnd = new Random();
