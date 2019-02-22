@@ -5,6 +5,6 @@
         FRI,
         FRII,
         Undefined,
-        Unchecked
+        Unchecked = 0
     }
 }

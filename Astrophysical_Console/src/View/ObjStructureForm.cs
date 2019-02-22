@@ -57,7 +57,7 @@ namespace Astrophysical_Console.View
             
             try
             {
-                MainPictureBox.Image = objImgPairs[current].Item2;
+                MainPictureBox.Image = FitImage(objImgPairs[current].Item2);
             }
             catch
             {
@@ -65,6 +65,24 @@ namespace Astrophysical_Console.View
             }
 
             DoneLabel.Text = "Done: " + (current + 1) + " out of " + objImgPairs.Length;
+        }
+        
+        private Bitmap FitImage(Bitmap image)
+        {
+            const int scale = 13;
+            Bitmap newImage = new Bitmap(image.Width * scale, image.Height * scale);
+            Graphics graph = Graphics.FromImage(newImage);
+            int i, j;
+
+            for (i = 0; i < image.Width; i++)
+            {
+                for (j = 0; j < image.Width; j++)
+                {
+                    graph.FillRectangle(new SolidBrush(image.GetPixel(i, j)), i * scale, j * scale, scale, scale);
+                }
+            }
+
+            return newImage;
         }
     }
 }

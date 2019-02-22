@@ -80,16 +80,15 @@ namespace Astrophysical_Console.View
             foreach (string line in contents)
             {
                 currLine = line.Split(char.Parse(Radioobject.STANDART_STRING_DELIMETER));
-                currentRadioobjects.Add(new Radioobject
-                {
-                    Catalog = currLine[0],
-                    Name = currLine[1],
-                    Coords = new Coordinates(currLine[2]),
-                    FluxOn325 = double.Parse(currLine[3]),
-                    FluxOn1400 = double.Parse(currLine[4]),
-                    Type = Radioobject.ParseType(currLine[5]),
-                    DensityRatio = double.Parse(currLine[6])
-                });
+                currentRadioobjects.Add(new Radioobject(
+                    catalog: currLine[0],
+                    name: currLine[1],
+                    coords: new Coordinates(currLine[2]),
+                    fluxOn325: double.Parse(currLine[3]),
+                    fluxOn1400: double.Parse(currLine[4]),
+                    type: Radioobject.ParseType(currLine[5]),
+                    densityRatio: double.Parse(currLine[6])
+                    ));
             }
 
             Log("Objects were imported.");

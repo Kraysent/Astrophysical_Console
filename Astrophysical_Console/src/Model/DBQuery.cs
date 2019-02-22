@@ -5,15 +5,14 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Astrophysical_Console.Model
 {
     static class DBQuery
     {
         public delegate void ProgressHandler(string process, int curr, int length);
-        public delegate void ProcessEndedHandler(string process);
-        public static event ProcessEndedHandler ProcessEnded;
+        //public delegate void ProcessEndedHandler(string process);
+        //public static event ProcessEndedHandler ProcessEnded;
         public static event ProgressHandler Progress;
 
         /// <summary>
@@ -162,10 +161,10 @@ namespace Astrophysical_Console.Model
             {
                 currPath = $"{outputPath}\\{objects[i].Coords.ToString()}.jpg";
 
-                currPicture = await GetPicture(objects[i].Coords, outputPath);
+                currPicture = await GetPicture(objects[i].Coords);
                 if (currPicture == null)
                     continue;
-                currPicture = await MinimizePicture(currPicture);
+                //currPicture = await MinimizePicture(currPicture);
                 currPicture.Save(currPath);
                 Progress(ProcessName, i, objects.Count);
             }
@@ -202,10 +201,10 @@ namespace Astrophysical_Console.Model
         /// </summary>
         /// <param name="coords"></param>
         /// <param name="outputPath"></param>
-        private static async Task<Bitmap> GetPicture(Coordinates coords, string outputPath)
+        private static async Task<Bitmap> GetPicture(Coordinates coords)
         {
-            string url = "https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Position=" + coords.ToString() + "&survey=NVSS&coordinates=J2000&coordinates=" +
-                "&projection=Tan&pixels=300&size=0.1&float=on&scaling=Log&resolver=SIMBAD-NED&Sampler=_skip_&Deedger=_skip_&rotation=&Smooth=" +
+            string url = "https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Position=" + coords.ToString() + "&survey=VLA+FIRST+(1.4+GHz)&coordinates=J2000&coordinates=" +
+                "&projection=Tan&pixels=300&size=0.01&float=on&scaling=Log&resolver=SIMBAD-NED&Sampler=_skip_&Deedger=_skip_&rotation=&Smooth=" +
                 "&lut=colortables%2Fb-w-linear.bin&PlotColor=&grid=_skip_&gridlabels=1&catalogurl=&CatalogIDs=on&survey=_skip_&survey=_skip_&survey=_skip_" +
                 "&IOSmooth=&contour=&contourSmooth=&ebins=null";
             string[] source = await GetHTMLCode(url);
@@ -316,7 +315,7 @@ namespace Astrophysical_Console.Model
             return (await (new StreamReader(response.GetResponseStream())).ReadToEndAsync()).Split('\n');
         }
         
-        private async static Task<string[]> GetHTMLCode(string url, string postData)
+        private static async Task<string[]> GetHTMLCode(string url, string postData)
         {
             byte[] data;
             string source;
