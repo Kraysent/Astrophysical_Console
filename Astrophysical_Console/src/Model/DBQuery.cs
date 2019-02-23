@@ -164,7 +164,7 @@ namespace Astrophysical_Console.Model
                 currPicture = await GetPicture(objects[i].Coords);
                 if (currPicture == null)
                     continue;
-                //currPicture = await MinimizePicture(currPicture);
+                currPicture = await MinimizePicture(currPicture);
                 currPicture.Save(currPath);
                 Progress(ProcessName, i, objects.Count);
             }
@@ -203,8 +203,8 @@ namespace Astrophysical_Console.Model
         /// <param name="outputPath"></param>
         private static async Task<Bitmap> GetPicture(Coordinates coords)
         {
-            string url = "https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Position=" + coords.ToString() + "&survey=VLA+FIRST+(1.4+GHz)&coordinates=J2000&coordinates=" +
-                "&projection=Tan&pixels=300&size=0.01&float=on&scaling=Log&resolver=SIMBAD-NED&Sampler=_skip_&Deedger=_skip_&rotation=&Smooth=" +
+            string url = "https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Position=" + coords.RAToString() + "%2C+" + coords.DecToString() + "&survey=VLA+FIRST+(1.4+GHz)&coordinates=J2000&coordinates=" +
+                "&projection=Tan&pixels=300&size=0.03&float=on&scaling=Log&resolver=SIMBAD-NED&Sampler=_skip_&Deedger=_skip_&rotation=&Smooth=" +
                 "&lut=colortables%2Fb-w-linear.bin&PlotColor=&grid=_skip_&gridlabels=1&catalogurl=&CatalogIDs=on&survey=_skip_&survey=_skip_&survey=_skip_" +
                 "&IOSmooth=&contour=&contourSmooth=&ebins=null";
             string[] source = await GetHTMLCode(url);
@@ -246,8 +246,8 @@ namespace Astrophysical_Console.Model
         /// <returns></returns>
         private static async Task<Bitmap> MinimizePicture(Bitmap img)
         {
-            const int squareSide = 12, squareNumber = 24;
-            int i, j, currX, currY;
+            const int squareSide = 5;
+            int i, j, currX, currY, squareNumber = img.Width / squareSide;
             Bitmap newImg = new Bitmap(squareNumber, squareNumber);
 
             await Task.Run(() =>

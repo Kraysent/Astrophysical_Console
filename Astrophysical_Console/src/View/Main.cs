@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -17,6 +18,7 @@ namespace Astrophysical_Console.View
         List<Control> mainControls;
         List<Radioobject> currentRadioobjects;
         int ListLength => currentRadioobjects.Count;
+        public ImportType importType;
 
         public delegate void ListChangedHandler();
         public event ListChangedHandler ListChanged;
@@ -29,6 +31,7 @@ namespace Astrophysical_Console.View
             Shown += new EventHandler(Main_Shown);
             DBQuery.Progress += InsertCounter;
             ListChanged += SaveObjList;
+            importType = ImportType.BySpectralIndex;
         }
 
         private void Main_Shown(object sender, EventArgs e)
@@ -76,19 +79,33 @@ namespace Astrophysical_Console.View
                 return;
 
             contents = File.ReadAllLines(inputPath);
-
+            
             foreach (string line in contents)
             {
-                currLine = line.Split(char.Parse(Radioobject.STANDART_STRING_DELIMETER));
-                currentRadioobjects.Add(new Radioobject(
-                    catalog: currLine[0],
-                    name: currLine[1],
-                    coords: new Coordinates(currLine[2]),
-                    fluxOn325: double.Parse(currLine[3]),
-                    fluxOn1400: double.Parse(currLine[4]),
-                    type: Radioobject.ParseType(currLine[5]),
-                    densityRatio: double.Parse(currLine[6])
-                    ));
+                currLine = line.Split(new char[] { ' '/*char.Parse(Radioobject.STANDART_STRING_DELIMETER)*/ }, StringSplitOptions.RemoveEmptyEntries);
+
+                switch (importType)
+                {
+                    case ImportType.ByFlux:
+                        currentRadioobjects.Add(new Radioobject(
+                                catalog: currLine[0],
+                                name: currLine[1],
+                                coords: new Coordinates(currLine[2]),
+                                fluxOn325: double.Parse(currLine[3]),
+                                fluxOn1400: double.Parse(currLine[4]),
+                                type: Radioobject.ParseType(currLine[5]),
+                                densityRatio: double.Parse(currLine[6])
+                                ));
+                        break;
+                    case ImportType.BySpectralIndex:
+                        currentRadioobjects.Add(new Radioobject(
+                            catalog: " ",
+                            name: currLine[0] + "-" + currLine[1],
+                            coords: new Coordinates(currLine[0], currLine[1], ':'),
+                            spectralIndex: double.Parse(currLine[2].Replace('.', ','))
+                            ));
+                        break;
+                }
             }
 
             Log("Objects were imported.");

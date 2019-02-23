@@ -2,9 +2,9 @@
 {
     public enum StructureType
     {
-        FRI,
-        FRII,
+        Unchecked,
         Undefined,
-        Unchecked = 0
+        FRI,
+        FRII
     }
 }

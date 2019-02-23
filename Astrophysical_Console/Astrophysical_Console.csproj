@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="src\Model\DBQuery.cs" />
     <Compile Include="src\Coordinates.cs" />
+    <Compile Include="src\View\ImportType.cs" />
     <Compile Include="src\View\DataViewForm.cs">
       <SubType>Form</SubType>
     </Compile>

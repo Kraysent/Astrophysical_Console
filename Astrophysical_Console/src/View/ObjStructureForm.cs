@@ -1,5 +1,4 @@
-﻿using Astrophysical_Console.Model;
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -69,7 +68,7 @@ namespace Astrophysical_Console.View
         
         private Bitmap FitImage(Bitmap image)
         {
-            const int scale = 13;
+            const int scale = 5; //Number of pixels per real pixel
             Bitmap newImage = new Bitmap(image.Width * scale, image.Height * scale);
             Graphics graph = Graphics.FromImage(newImage);
             int i, j;
