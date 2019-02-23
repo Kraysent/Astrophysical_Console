@@ -5,45 +5,43 @@ namespace Astrophysical_Console
     public class Radioobject
     {
         public const string STANDART_STRING_DELIMETER = "|";
-
-        private readonly string _catalog;
-        private readonly string _name;
+        
         private readonly Coordinates _coords;
         private readonly double _fluxOn325;
         private readonly double _fluxOn1400;
         private readonly double _spectralIndex;
+        private double _redshift; 
         private StructureType _type;
         private double _densityRatio;
-
-        public string Catalog => _catalog;
-        public string Name => _name;
+        
         public Coordinates Coords => _coords;
         public double FluxOn325 => _fluxOn325;
         public double FluxOn1400 => _fluxOn1400;
         public double SpectralIndex => _spectralIndex;
         public StructureType Type { get => _type; set => _type = value; }
         public double DensityRatio { get => _densityRatio; set => _densityRatio = value; }
+        public double Redshift { get => _redshift; set => _redshift = value; }
 
-        public Radioobject(string catalog, string name, Coordinates coords, double fluxOn325, double fluxOn1400)
+        public Radioobject(Coordinates coords, double fluxOn325, double fluxOn1400)
         {
-            _catalog = catalog;
-            _name = name;
             _coords = coords;
             _fluxOn325 = fluxOn325;
             _fluxOn1400 = fluxOn1400;
             _spectralIndex = (Log10(fluxOn1400) - Log10(FluxOn325)) / (Log10(1400) - Log10(325));
         }
 
-        public Radioobject(string catalog, string name, Coordinates coords, double spectralIndex)
+        public Radioobject(Coordinates coords, double spectralIndex)
         {
-            _catalog = catalog;
-            _name = name;
             _coords = coords;
             _spectralIndex = spectralIndex;
         }
 
-        public Radioobject(string catalog, string name, Coordinates coords, double fluxOn325, double fluxOn1400, StructureType type, double densityRatio) : this(catalog, name, coords, fluxOn325, fluxOn1400)
+        public Radioobject(Coordinates coords, double fluxOn325, double fluxOn1400, StructureType type, double densityRatio)
         {
+            _coords = coords;
+            _fluxOn325 = fluxOn325;
+            _fluxOn1400 = fluxOn1400;
+            _spectralIndex = (Log10(fluxOn1400) - Log10(FluxOn325)) / (Log10(1400) - Log10(325));
             _type = type;
             _densityRatio = densityRatio;
         }
@@ -60,8 +58,8 @@ namespace Astrophysical_Console
 
         public string ToLongString(string delimeter = STANDART_STRING_DELIMETER)
         {
-            return Catalog + delimeter + Name + delimeter + Coords.ToString() + delimeter
-                + FluxOn325 + delimeter + FluxOn1400 + delimeter + Type.ToString() + delimeter + DensityRatio;
+            return Coords.ToString() + delimeter + FluxOn325 + delimeter + FluxOn1400 + delimeter + SpectralIndex + 
+                delimeter + Type.ToString() + delimeter + DensityRatio + delimeter + Redshift;
         }
         
         public static StructureType ParseType(string str)

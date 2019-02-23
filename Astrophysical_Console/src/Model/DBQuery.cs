@@ -135,7 +135,7 @@ namespace Astrophysical_Console.Model
                             }
                             catch (FormatException) { continue; }
 
-                            output.Add(new Radioobject(obj1Params[0], obj1Params[1], coords1, currFlux325, currFlux1400));
+                            output.Add(new Radioobject(coords1, currFlux325, currFlux1400));
 
                             break;
                         }
@@ -189,6 +189,7 @@ namespace Astrophysical_Console.Model
             {
                 Progress("Counting density ratio", i, objects.Count);
                 objects[i].DensityRatio = (await GetObjectsDensity(objects[i].Coords, 15 * 60)) / areaDensity;
+                objects[i].Redshift = await GetObjectsRedshift(objects[i].Coords);
             }
 
             return objects;
@@ -282,6 +283,39 @@ namespace Astrophysical_Console.Model
             string[] source = await GetHTMLCode(url);
 
             return source.Length / (Math.PI * radius * radius);
+        }
+
+        /// <summary>
+        /// Returns redshift of object, if it is measured
+        /// </summary>
+        /// <param name="coords"></param>
+        /// <returns></returns>
+        private static async Task<double> GetObjectsRedshift(Coordinates coords)
+        {
+            const int radius = 1;
+            string url = "https://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0" +
+                $"&lon={coords.RAToString()}&lat={coords.DecToString()}&radius={radius}.0&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&" +
+                $"z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0" +
+                $"&obj_sort=Distance+to+search+center&of=ascii_bar&zv_breaker=30000.0&list_limit=5&img_stamp=YES";
+            string[] source = await GetHTMLCode(url);
+            int i;
+            string[] currLine;
+
+            try
+            {
+                for (i = 27; i < source.Length; i++)
+                {
+                    currLine = source[i].Split('|');
+
+                    if (currLine[4] == "RadioS")
+                        if (currLine[6].Trim(' ') != "")
+                            return double.Parse(currLine[6].Trim(' ').Replace('.', ','));
+                        else return 0;
+                }
+
+                return 0;
+            }
+            catch { return 0; }
         }
 
         /// <summary>

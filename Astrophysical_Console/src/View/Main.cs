@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -88,19 +87,15 @@ namespace Astrophysical_Console.View
                 {
                     case ImportType.ByFlux:
                         currentRadioobjects.Add(new Radioobject(
-                                catalog: currLine[0],
-                                name: currLine[1],
-                                coords: new Coordinates(currLine[2]),
-                                fluxOn325: double.Parse(currLine[3]),
-                                fluxOn1400: double.Parse(currLine[4]),
-                                type: Radioobject.ParseType(currLine[5]),
-                                densityRatio: double.Parse(currLine[6])
+                                coords: new Coordinates(currLine[0]),
+                                fluxOn325: double.Parse(currLine[1]),
+                                fluxOn1400: double.Parse(currLine[2]),
+                                type: Radioobject.ParseType(currLine[3]),
+                                densityRatio: double.Parse(currLine[4])
                                 ));
                         break;
                     case ImportType.BySpectralIndex:
                         currentRadioobjects.Add(new Radioobject(
-                            catalog: " ",
-                            name: currLine[0] + "-" + currLine[1],
                             coords: new Coordinates(currLine[0], currLine[1], ':'),
                             spectralIndex: double.Parse(currLine[2].Replace('.', ','))
                             ));
@@ -370,17 +365,7 @@ namespace Astrophysical_Console.View
             column.Caption = "ID";
             column.ReadOnly = true;
             objectsTable.Columns.Add(column);
-
-            column = new DataColumn("Catalog", typeof(string));
-            column.Caption = "Catalog";
-            column.ReadOnly = true;
-            objectsTable.Columns.Add(column);
-
-            column = new DataColumn("Name", typeof(string));
-            column.Caption = "Name";
-            column.ReadOnly = true;
-            objectsTable.Columns.Add(column);
-
+            
             column = new DataColumn("Coordinates", typeof(string));
             column.Caption = "Coordinates";
             column.ReadOnly = true;
@@ -411,19 +396,23 @@ namespace Astrophysical_Console.View
             column.ReadOnly = true;
             objectsTable.Columns.Add(column);
 
+            column = new DataColumn("Redshift", typeof(string));
+            column.Caption = "Redshift";
+            column.ReadOnly = true;
+            objectsTable.Columns.Add(column);
+
             for (i = 0; i < currentRadioobjects.Count; i++)
             {
                 Radioobject obj = currentRadioobjects[i];
                 row = objectsTable.NewRow();
                 row["ID"] = i;
-                row["Catalog"] = obj.Catalog;
-                row["Name"] = obj.Name;
                 row["Coordinates"] = obj.Coords.ToString();
                 row["Flux on 325"] = obj.FluxOn325.ToString();
                 row["Flux on 1400"] = obj.FluxOn1400.ToString();
                 row["Structure type"] = obj.Type.ToString();
                 row["Density ratio"] = obj.DensityRatio.ToString();
                 row["Spectral index"] = obj.SpectralIndex.ToString();
+                row["Redshift"] = obj.Redshift.ToString();
                 objectsTable.Rows.Add(row);
             }
 
