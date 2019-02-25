@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Angle.cs" />
     <Compile Include="src\Model\DBQuery.cs" />
     <Compile Include="src\Coordinates.cs" />
     <Compile Include="src\View\ImportType.cs" />

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Astrophysical_Console
 {
-    public struct Coordinates
+    public class Coordinates
     {
         private int _raH;
         private int _raM;
@@ -11,7 +11,7 @@ namespace Astrophysical_Console
         private int _decD;
         private int _decM;
         private int _decS;
-
+        
         public Coordinates(int raH, int raM, int raS, int decD, int decM, int decS)
         {
             this._raH = raH;
@@ -145,7 +145,7 @@ namespace Astrophysical_Console
         /// Converts decline coordinate to decline seconds
         /// </summary>
         public int DecSeconds => DecD * 3600 + DecM * 60 + DecS;
-
+        
         public override bool Equals(object obj1)
         {
             Coordinates obj = (Coordinates)obj1;
