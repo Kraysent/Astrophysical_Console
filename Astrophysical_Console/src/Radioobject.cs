@@ -36,14 +36,15 @@ namespace Astrophysical_Console
             _spectralIndex = spectralIndex;
         }
 
-        public Radioobject(Coordinates coords, double fluxOn325, double fluxOn1400, StructureType type, double densityRatio)
+        public Radioobject(Coordinates coords, double fluxOn325, double fluxOn1400, double spectralIndex, StructureType type, double densityRatio, double redshift)
         {
             _coords = coords;
             _fluxOn325 = fluxOn325;
             _fluxOn1400 = fluxOn1400;
-            _spectralIndex = (Log10(fluxOn1400) - Log10(FluxOn325)) / (Log10(1400) - Log10(325));
+            _spectralIndex = spectralIndex;
             _type = type;
             _densityRatio = densityRatio;
+            _redshift = redshift;
         }
 
         public override string ToString()

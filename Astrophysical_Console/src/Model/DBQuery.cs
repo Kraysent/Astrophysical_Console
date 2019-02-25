@@ -22,10 +22,11 @@ namespace Astrophysical_Console.Model
         /// <param name="frequency"></param>
         /// <param name="radius"></param>
         /// <returns></returns>
-        public static async Task<string[]> Query(Coordinates coords, int frequency, int radius)
+        public static async Task<string> Query(Coordinates coords, int frequency, int radius)
         {
             const string URL = "https://www.sao.ru/cats/cq";
             string postData = "";
+            string[] source;
 
             postData = "ALPHA_MAX=" + (coords + new Coordinates(radius / 15, 0)).RAToString();
             postData += "&ALPHA_MIN=" + (coords - new Coordinates(radius / 15, 0)).RAToString();
@@ -45,7 +46,17 @@ namespace Astrophysical_Console.Model
             postData += "&GLON_MIN=";
             postData += "&OUT_FORMAT=table";
             
-            return await GetHTMLCode(URL, postData);
+            source = await GetHTMLCode(URL, postData);
+
+            foreach (string line in source)
+            {
+                if (line.Contains("<A HREF="))
+                {
+                    return "https://www.sao.ru/cats/" + line.Split('"')[1];
+                }
+            }
+
+            throw new Exception("No link in the source.");
         }
 
         /// <summary>
@@ -54,21 +65,11 @@ namespace Astrophysical_Console.Model
         /// <param name="source"></param>
         /// <param name="coords"></param>
         /// <returns></returns>
-        public static async Task<List<string>> HTMLParseLinkToObjects(string[] source)
+        public static async Task<string[]> HTMLParseLinkToObjects(string link)
         {
-            string link = "";
             string[] output;
             int i;
             List<string> result = new List<string>();
-
-            foreach (string line in source)
-            {
-                if (line.Contains("<A HREF="))
-                {
-                    link = "https://www.sao.ru/cats/" + line.Split('"')[1];
-                    break;
-                }
-            }
             
             output = Encoding.ASCII.GetString(await (new WebClient()).DownloadDataTaskAsync(link)).Split('\n');
 
@@ -80,7 +81,7 @@ namespace Astrophysical_Console.Model
                     break;
             }
 
-            return result;
+            return result.ToArray();
         }
 
         /// <summary>
@@ -180,16 +181,23 @@ namespace Astrophysical_Console.Model
         /// <param name=""></param>
         /// <param name="radius"></param>
         /// <returns></returns>
-        public static async Task<List<Radioobject>> GetDensityRatio(List<Radioobject> objects, Coordinates centerCoords, int radius)
+        public static async Task<List<Radioobject>> GetDensityRatio(List<Radioobject> objects, Coordinates centerCoords, int radius1)
         {
-            double areaDensity = await GetAverageAreaDensity(centerCoords, radius);
-            int i;
+            double areaDensity = await GetAverageAreaDensity(centerCoords, radius1);
+            int i, radius = 5;
 
             for (i = 0; i < objects.Count; i++)
             {
                 Progress("Counting density ratio", i, objects.Count);
-                objects[i].DensityRatio = (await GetObjectsDensity(objects[i].Coords, 15 * 60)) / areaDensity;
-                objects[i].Redshift = await GetObjectsRedshift(objects[i].Coords);
+
+                string url = "https://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0" +
+                $"&lon={objects[i].Coords.RAToString()}&lat={objects[i].Coords.DecToString()}&radius={radius}&hconst=73&omegam=0.27&omegav=0.73&corr_z=1" +
+                "&z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0" +
+                "&obj_sort=Distance+to+search+center&of=ascii_bar&zv_breaker=30000.0&list_limit=5&img_stamp=YES";
+                string[] source = await GetHTMLCode(url);
+
+                objects[i].DensityRatio = (source.Length - 27) / (Math.PI * radius * radius) / areaDensity;
+                objects[i].Redshift = GetObjectsRedshift(source);
             }
 
             return objects;
@@ -272,17 +280,17 @@ namespace Astrophysical_Console.Model
         /// Returns average density of area near object
         /// </summary>
         /// <param name="coords"></param>
-        /// <param name="radius"></param>
+        /// <param name="radius">Radius in arcmins</param>
         /// <returns></returns>
         private static async Task<double> GetObjectsDensity(Coordinates coords, int radius)
         {
-            string url = "https://ned.ipac.caltech.edu/cgi-bin/objsearch?in_csys=Equatorial&in_equinox=J2000.0&lon=" + coords.RAToString() + 
-                "&lat=" + coords.DecToString() + "&radius=" + (radius / 60) + "&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&z_constraint=Unconstrained" +
-                "&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0&obj_sort=Distance+to+search+center" +
-                "&of=ascii_tab&zv_breaker=30000.0&list_limit=5&img_stamp=YES&search_type=Near+Position+Search";
+            string url = "https://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0" +
+                $"&lon={coords.RAToString()}&lat={coords.DecToString()}&radius={radius}&hconst=73&omegam=0.27&omegav=0.73&corr_z=1" +
+                "&z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0" +
+                "&obj_sort=Distance+to+search+center&of=ascii_bar&zv_breaker=30000.0&list_limit=5&img_stamp=YES";
             string[] source = await GetHTMLCode(url);
 
-            return source.Length / (Math.PI * radius * radius);
+            return (source.Length  - 27) / (Math.PI * radius * radius);
         }
 
         /// <summary>
@@ -290,14 +298,8 @@ namespace Astrophysical_Console.Model
         /// </summary>
         /// <param name="coords"></param>
         /// <returns></returns>
-        private static async Task<double> GetObjectsRedshift(Coordinates coords)
+        private static double GetObjectsRedshift(string[] source)
         {
-            const int radius = 1;
-            string url = "https://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0" +
-                $"&lon={coords.RAToString()}&lat={coords.DecToString()}&radius={radius}.0&hconst=73&omegam=0.27&omegav=0.73&corr_z=1&" +
-                $"z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0" +
-                $"&obj_sort=Distance+to+search+center&of=ascii_bar&zv_breaker=30000.0&list_limit=5&img_stamp=YES";
-            string[] source = await GetHTMLCode(url);
             int i;
             string[] currLine;
 
@@ -334,7 +336,7 @@ namespace Astrophysical_Console.Model
             for (i = 0; i < NUMBER_OF_ITERATIONS; i++)
             {
                 Progress("Counting area density", i, NUMBER_OF_ITERATIONS);
-                averageDensity += await GetObjectsDensity(coords + new Coordinates(rnd.Next(radius), rnd.Next(radius)), 2 * 60);
+                averageDensity += await GetObjectsDensity(coords + new Coordinates(rnd.Next(radius), rnd.Next(radius)), 2);
             }
 
             averageDensity = averageDensity / NUMBER_OF_ITERATIONS;

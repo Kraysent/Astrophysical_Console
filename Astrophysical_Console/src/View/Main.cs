@@ -81,7 +81,7 @@ namespace Astrophysical_Console.View
             
             foreach (string line in contents)
             {
-                currLine = line.Split(new char[] { ' '/*char.Parse(Radioobject.STANDART_STRING_DELIMETER)*/ }, StringSplitOptions.RemoveEmptyEntries);
+                currLine = line.Split(new char[] { (importType == ImportType.ByFlux) ? char.Parse(Radioobject.STANDART_STRING_DELIMETER) : ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                 switch (importType)
                 {
@@ -90,8 +90,10 @@ namespace Astrophysical_Console.View
                                 coords: new Coordinates(currLine[0]),
                                 fluxOn325: double.Parse(currLine[1]),
                                 fluxOn1400: double.Parse(currLine[2]),
-                                type: Radioobject.ParseType(currLine[3]),
-                                densityRatio: double.Parse(currLine[4])
+                                spectralIndex: double.Parse(currLine[3].Replace('.', ',')),
+                                type: Radioobject.ParseType(currLine[4]),
+                                densityRatio: double.Parse(currLine[5]),
+                                redshift: double.Parse(currLine[6])
                                 ));
                         break;
                     case ImportType.BySpectralIndex:
@@ -221,22 +223,15 @@ namespace Astrophysical_Console.View
         {
             if (ListIsEmptyOrNull() == true)
                 return;
-
-            Coordinates midCoords = currentRadioobjects[0].Coords;
-            int i;
             
-            for (i = 1; i < currentRadioobjects.Count; i++)
-            {
-                midCoords = Coordinates.Middle(midCoords, currentRadioobjects[i].Coords);
-            }
-
             try
             {
-                currentRadioobjects = (await DBQuery.GetDensityRatio(currentRadioobjects, midCoords, 15000)).ToList();
+                currentRadioobjects = (await DBQuery.GetDensityRatio(currentRadioobjects, currentRadioobjects[0].Coords, 15000)).ToList();
             }
-            catch
+            catch (Exception e1)
             {
-                Log("Server error, try again.");
+                Log(e1.Message);
+                //Log("Server error, try again.");
             }
 
             ListChanged();

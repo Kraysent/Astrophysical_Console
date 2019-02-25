@@ -63,5 +63,17 @@ namespace Astrophysical_Console.Tests
             //Assert
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void Middle()
+        {
+            //Arrange
+            Coordinates c1 = new Coordinates(12, 30, 00, 45, 00, 00), c2 = new Coordinates(10, 30, 00, 50, 00, 00);
+
+            //Act
+
+            //Assert
+            Assert.AreEqual(new Coordinates(11, 30, 00, 47, 30, 00), Coordinates.Middle(c1, c2));
+        }
     }
 }
