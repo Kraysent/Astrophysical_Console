@@ -180,14 +180,14 @@ namespace Astrophysical_Console.View
             Log("Query to cats.sao.ru, freq = 1400...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
             first = DateTime.Now;
-            string[] query1400 = await DBQuery.Query(coords, 1400, radius);
+            string query1400 = await DBQuery.Query(coords, 1400, radius);
             Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
 
             Log("Query to cats.sao.ru, freq = 325...");
             processProgressBar.Style = ProgressBarStyle.Marquee;
             first = DateTime.Now;
-            string[] query325 = await DBQuery.Query(coords, 325, radius);
+            string query325 = await DBQuery.Query(coords, 325, radius);
             Log("Elapsed time: " + (DateTime.Now - first).TotalMilliseconds + " ms.");
             processProgressBar.Style = ProgressBarStyle.Blocks;
 
