@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace AstrophysicalEngine.ViewModel
 {
+    //TODO: Time measurement
+    
     public class Session
     {
         public RadioobjectEnumerable Radioobjects { get; set; }

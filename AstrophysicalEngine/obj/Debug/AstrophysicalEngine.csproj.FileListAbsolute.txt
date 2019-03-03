@@ -1,0 +1,6 @@
+D:\Coding\C#\Astrophysical_Console\AstrophysicalEngine\bin\Debug\AstrophysicalEngine.dll
+D:\Coding\C#\Astrophysical_Console\AstrophysicalEngine\bin\Debug\AstrophysicalEngine.pdb
+D:\Coding\C#\Astrophysical_Console\AstrophysicalEngine\obj\Debug\AstrophysicalEngine.csprojAssemblyReference.cache
+D:\Coding\C#\Astrophysical_Console\AstrophysicalEngine\obj\Debug\AstrophysicalEngine.csproj.CoreCompileInputs.cache
+D:\Coding\C#\Astrophysical_Console\AstrophysicalEngine\obj\Debug\AstrophysicalEngine.dll
+D:\Coding\C#\Astrophysical_Console\AstrophysicalEngine\obj\Debug\AstrophysicalEngine.pdb
