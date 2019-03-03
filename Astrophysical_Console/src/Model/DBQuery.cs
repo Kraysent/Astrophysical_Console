@@ -184,7 +184,7 @@ namespace Astrophysical_Console.Model
         public static async Task<List<Radioobject>> GetDensityRatio(List<Radioobject> objects, Coordinates centerCoords, int radius1)
         {
             double areaDensity = await GetAverageAreaDensity(centerCoords, radius1);
-            int i, radius = 5;
+            int i, radius = 15;
 
             for (i = 0; i < objects.Count; i++)
             {
@@ -197,7 +197,7 @@ namespace Astrophysical_Console.Model
                 string[] source = await GetHTMLCode(url);
 
                 objects[i].DensityRatio = (source.Length - 27) / (Math.PI * radius * radius) / areaDensity;
-                objects[i].Redshift = GetObjectsRedshift(source);
+                //objects[i].Redshift = GetObjectsRedshift(source);
             }
 
             return objects;

@@ -30,7 +30,7 @@ namespace Astrophysical_Console.View
             Shown += new EventHandler(Main_Shown);
             DBQuery.Progress += InsertCounter;
             ListChanged += SaveObjList;
-            importType = ImportType.BySpectralIndex;
+            importType = ImportType.ByFlux;
         }
 
         private void Main_Shown(object sender, EventArgs e)
@@ -226,7 +226,7 @@ namespace Astrophysical_Console.View
             
             try
             {
-                currentRadioobjects = (await DBQuery.GetDensityRatio(currentRadioobjects, currentRadioobjects[0].Coords, 15000)).ToList();
+                currentRadioobjects = (await DBQuery.GetDensityRatio(currentRadioobjects.Where(x => x.Type == StructureType.FRII).ToList(), currentRadioobjects[0].Coords, 15000)).ToList();
             }
             catch (Exception e1)
             {
