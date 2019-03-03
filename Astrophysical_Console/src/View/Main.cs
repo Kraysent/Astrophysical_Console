@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Astrophysical_Console.Model;
+using AstrophysicalEngine.ViewModel;
 
 namespace Astrophysical_Console.View
 {
@@ -18,6 +19,7 @@ namespace Astrophysical_Console.View
         List<Radioobject> currentRadioobjects;
         int ListLength => currentRadioobjects.Count;
         public ImportType importType;
+        private Session _session;
 
         public delegate void ListChangedHandler();
         public event ListChangedHandler ListChanged;
@@ -31,6 +33,7 @@ namespace Astrophysical_Console.View
             DBQuery.Progress += InsertCounter;
             ListChanged += SaveObjList;
             importType = ImportType.ByFlux;
+            _session = new Session();
         }
 
         private void Main_Shown(object sender, EventArgs e)

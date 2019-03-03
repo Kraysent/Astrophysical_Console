@@ -113,6 +113,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\AstrophysicalEngine\AstrophysicalEngine.csproj">
+      <Project>{28ade66a-8ef3-46b7-9058-9bc634252a39}</Project>
+      <Name>AstrophysicalEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
