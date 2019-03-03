@@ -7,30 +7,25 @@ namespace AstrophysicalEngine.ViewModel
 {
     public class Session
     {
-        public RadioobjectEnumerator Radioobjects { get; set; }
-        public int AreaRadus { get; set; }
+        public RadioobjectEnumerable Radioobjects { get; set; }
+        public int AreaRadius { get; set; }
         public string OutputPath { get; set; }
 
         public event EventHandler<string> Log;
 
-        public Session(RadioobjectEnumerator radioobjects, string outputPath)
+        public Session(RadioobjectEnumerable radioobjects, string outputPath, int areaRadius)
         {
-            this.Radioobjects = radioobjects;
+            Radioobjects = radioobjects;
             OutputPath = outputPath;
+            AreaRadius = areaRadius;
         }
-        public Session(RadioobjectEnumerator radioobjects)
-        {
-            this.Radioobjects = radioobjects;
-            OutputPath = Directory.GetCurrentDirectory() + "\\";
-        }
-        public Session()
-        {
-            Radioobjects = new RadioobjectEnumerator();
-            OutputPath = Directory.GetCurrentDirectory() + "\\"; 
-        }
+        public Session(RadioobjectEnumerable radioobjects, int areaRadius) : this(radioobjects, Directory.GetCurrentDirectory() + "\\", areaRadius) { }
+        public Session() : this(new RadioobjectEnumerable(), 0) { }
 
         public async Task DownloadListOfObjects(Coordinates coords, int radius)
         {
+            AreaRadius = radius;
+
             try
             {
                 await Radioobjects.DownloadObjectsList(coords, radius);

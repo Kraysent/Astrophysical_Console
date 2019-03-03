@@ -10,9 +10,12 @@ using System.Threading.Tasks;
 
 namespace AstrophysicalEngine.Model
 {
-    public class RadioobjectEnumerator : IEnumerable<Radioobject>
+    public class RadioobjectEnumerable : IEnumerable<Radioobject>
     {
         private List<Radioobject> _objects { get; set; } = new List<Radioobject>();
+
+        public event EventHandler<string> OnProcessBegin;
+        public event EventHandler<string> OnProcessEnd;
 
         //-----------------------------------------------------------------------------//
 
@@ -20,11 +23,21 @@ namespace AstrophysicalEngine.Model
 
         public async Task DownloadObjectsList(Coordinates coords, int radius)
         {
+            ProcessBegin("Query to CATS on frequency 1400");
             string query1400 = await Query(coords, 1400, radius);
+            ProcessEnd("Query to CATS on frequency 1400");
+            ProcessBegin("Query to CATS on frequency 325");
             string query325 = await Query(coords, 325, radius);
+            ProcessEnd("Query to CATS on frequency 325");
+            ProcessBegin("Parsing link to file with objects, frequency 1400");
             string[] obj1400 = (await HTMLParseLinkToObjects(query1400)).ToArray();
+            ProcessEnd("Parsing link to file with objects, frequency 1400");
+            ProcessBegin("Parsing link to file with objects, frequency 325");
             string[] obj325 = (await HTMLParseLinkToObjects(query325)).ToArray();
+            ProcessEnd("Parsing link to file with objects, frequency 325");
+            ProcessBegin("Parsing radioobjects");
             _objects = await ParseRadioobjects(obj325, obj1400);
+            ProcessEnd("Parsing radioobjects");
         }
 
         public async Task DownloadPictures(string outputPath)
@@ -323,6 +336,16 @@ namespace AstrophysicalEngine.Model
             source = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
             return source.Split('\n');
+        }
+
+        private void ProcessBegin(string processName)
+        {
+            OnProcessBegin?.Invoke(this, processName);
+        }
+
+        private void ProcessEnd(string processName)
+        {
+            OnProcessEnd?.Invoke(this, processName);
         }
     }
 }
