@@ -16,6 +16,7 @@ namespace AstrophysicalEngine.Model
 
         public event EventHandler<string> OnProcessBegin;
         public event EventHandler<string> OnProcessEnd;
+        public event EventHandler<ProgressEventArgs> OnProcessProgressed;
 
         //-----------------------------------------------------------------------------//
 
@@ -48,6 +49,8 @@ namespace AstrophysicalEngine.Model
 
             for (i = 0; i < _objects.Count; i++)
             {
+                ProcessProgressed(i, _objects.Count);
+
                 currPath = $"{outputPath}\\{_objects[i].Coords.ToString()}.jpg";
 
                 currPicture = await GetPicture(_objects[i].Coords);
@@ -60,11 +63,16 @@ namespace AstrophysicalEngine.Model
 
         public async Task GetDensityRatio(Coordinates centerCoords, int areaRadius)
         {
+            ProcessBegin("Counting area density");
             double areaDensity = await GetAverageAreaDensity(centerCoords, areaRadius);
+            ProcessEnd("Counting area density");
+
             int i, radius = 15;
 
             for (i = 0; i < _objects.Count; i++)
             {
+                ProcessProgressed(i, _objects.Count);
+
                 string url = "https://ned.ipac.caltech.edu/cgi-bin/objsearch?search_type=Near+Position+Search&in_csys=Equatorial&in_equinox=J2000.0" +
                 $"&lon={_objects[i].Coords.RAToString()}&lat={_objects[i].Coords.DecToString()}&radius={radius}&hconst=73&omegam=0.27&omegav=0.73&corr_z=1" +
                 "&z_constraint=Unconstrained&z_value1=&z_value2=&z_unit=z&ot_include=ANY&nmp_op=ANY&out_csys=Equatorial&out_equinox=J2000.0" +
@@ -157,10 +165,10 @@ namespace AstrophysicalEngine.Model
             {
                 for (i = 0; i < objList325.Length; i++)
                 {
+                    ProcessProgressed(i, objList325.Length);
+
                     obj1 = objList325[i];
                     obj1Params = obj1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    //Progress("Parsing radioobjects", i, objList325.Length);
 
                     try
                     {
@@ -271,6 +279,8 @@ namespace AstrophysicalEngine.Model
 
             for (i = 0; i < NUMBER_OF_ITERATIONS; i++)
             {
+                ProcessProgressed(i, NUMBER_OF_ITERATIONS);
+
                 averageDensity += await GetObjectsDensity(coords + new Coordinates(rnd.Next(radius), rnd.Next(radius)), 2);
             }
 
@@ -338,14 +348,10 @@ namespace AstrophysicalEngine.Model
             return source.Split('\n');
         }
 
-        private void ProcessBegin(string processName)
-        {
-            OnProcessBegin?.Invoke(this, processName);
-        }
+        private void ProcessBegin(string processName) => OnProcessBegin?.Invoke(this, processName);
 
-        private void ProcessEnd(string processName)
-        {
-            OnProcessEnd?.Invoke(this, processName);
-        }
+        private void ProcessEnd(string processName) => OnProcessEnd?.Invoke(this, processName);
+
+        private void ProcessProgressed(int current, int maximum) => OnProcessProgressed?.Invoke(this, new ProgressEventArgs(current, maximum));
     }
 }

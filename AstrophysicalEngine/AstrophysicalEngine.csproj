@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Coordinates.cs" />
+    <Compile Include="Model\ProgressEventArgs.cs" />
     <Compile Include="Model\Radioobject.cs" />
     <Compile Include="Model\RadioobjectEnumerable.cs" />
     <Compile Include="Model\StructureType.cs" />

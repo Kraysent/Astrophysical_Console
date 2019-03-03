@@ -11,24 +11,32 @@ namespace AstrophysicalEngine.ViewModel
         public int AreaRadius { get; set; }
         public string OutputPath { get; set; }
 
-        public event EventHandler<string> Log;
+        public event EventHandler<string> OnLog;
+        public event EventHandler<string> OnInsertLog;
 
         public Session(RadioobjectEnumerable radioobjects, string outputPath, int areaRadius)
         {
             Radioobjects = radioobjects;
             OutputPath = outputPath;
             AreaRadius = areaRadius;
+            Radioobjects.OnProcessBegin += ProcessBegin;
+            Radioobjects.OnProcessEnd += ProcessEnd;
+            Radioobjects.OnProcessProgressed += ProcessProgressed; 
         }
         public Session(RadioobjectEnumerable radioobjects, int areaRadius) : this(radioobjects, Directory.GetCurrentDirectory() + "\\", areaRadius) { }
         public Session() : this(new RadioobjectEnumerable(), 0) { }
 
+        //-----------------------------------------------------------------------//
+
         public async Task DownloadListOfObjects(Coordinates coords, int radius)
         {
+            ReportToLog("Downloading list began.");
             AreaRadius = radius;
 
             try
             {
                 await Radioobjects.DownloadObjectsList(coords, radius);
+                ReportToLog("Downloading list ended.");
             }
             catch (Exception ex)
             {
@@ -65,21 +73,50 @@ namespace AstrophysicalEngine.ViewModel
                         break;
                 }
             }
+
+            ReportToLog("Objects were imported.");
         }
 
         public async Task GetPictures()
         {
+            ReportToLog("Downloading pictures began.");
             await Radioobjects.DownloadPictures(OutputPath);
+            ReportToLog("Downloading pictures ended.");
         }
 
         public async Task GetObjectsDensity()
         {
+            ReportToLog("Getting density of objects began.");
             await Radioobjects.GetDensityRatio(Radioobjects[0].Coords, 15000);
+            ReportToLog("Getting density of objects ended.");
         }
-        
+
+        //-----------------------------------------------------------------------//
+
         private void ReportToLog(string text)
         {
-            Log?.Invoke(this, text);
+            OnLog?.Invoke(this, text);
+        }
+
+        private void InsertToLog(string text)
+        {
+            OnInsertLog?.Invoke(this, text);
+        }
+
+        private void ProcessBegin(object sender, string text)
+        {
+            ReportToLog($"Process \"{text}\" began.");
+            ReportToLog("");
+        }
+
+        private void ProcessEnd(object sender, string text)
+        {
+            ReportToLog($"Process \"{text}\" ended.");
+        }
+
+        private void ProcessProgressed(object sender, ProgressEventArgs e)
+        {
+            InsertToLog($"Progress: {e.Current} out of {e.Maximum}");
         }
     }
 }
