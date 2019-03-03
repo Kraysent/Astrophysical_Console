@@ -46,6 +46,7 @@
             this.StructureButton.TabIndex = 16;
             this.StructureButton.Text = "Open structure form";
             this.StructureButton.UseVisualStyleBackColor = true;
+            this.StructureButton.Click += new System.EventHandler(this.StructureButton_Click);
             // 
             // GetObjectsDensityButton
             // 
@@ -55,6 +56,7 @@
             this.GetObjectsDensityButton.TabIndex = 15;
             this.GetObjectsDensityButton.Text = "Get objects density";
             this.GetObjectsDensityButton.UseVisualStyleBackColor = true;
+            this.GetObjectsDensityButton.Click += new System.EventHandler(this.GetObjectsDensityButton_ClickAsync);
             // 
             // CurrentListButton
             // 
@@ -64,6 +66,7 @@
             this.CurrentListButton.TabIndex = 14;
             this.CurrentListButton.Text = "Show current list";
             this.CurrentListButton.UseVisualStyleBackColor = true;
+            this.CurrentListButton.Click += new System.EventHandler(this.CurrentListButton_Click);
             // 
             // GetPicturesButton
             // 
@@ -73,6 +76,7 @@
             this.GetPicturesButton.TabIndex = 13;
             this.GetPicturesButton.Text = "Get pictures";
             this.GetPicturesButton.UseVisualStyleBackColor = true;
+            this.GetPicturesButton.Click += new System.EventHandler(this.GetPicturesButton_ClickAsync);
             // 
             // ImportObjectsButton
             // 

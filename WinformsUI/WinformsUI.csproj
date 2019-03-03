@@ -45,6 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="View\DataViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\DataViewForm.Designer.cs">
+      <DependentUpon>DataViewForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -53,12 +59,21 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\ObjectStructureForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\ObjectStructureForm.Designer.cs">
+      <DependentUpon>ObjectStructureForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\QueryDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="View\QueryDialog.Designer.cs">
       <DependentUpon>QueryDialog.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="View\DataViewForm.resx">
+      <DependentUpon>DataViewForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="View\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
@@ -71,6 +86,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="View\ObjectStructureForm.resx">
+      <DependentUpon>ObjectStructureForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="View\QueryDialog.resx">
       <DependentUpon>QueryDialog.cs</DependentUpon>
     </EmbeddedResource>

@@ -1,0 +1,16 @@
+D:\Coding\C#\Astrophysical_Console\WinformsUI\bin\Debug\WinformsUI.exe.config
+D:\Coding\C#\Astrophysical_Console\WinformsUI\bin\Debug\WinformsUI.exe
+D:\Coding\C#\Astrophysical_Console\WinformsUI\bin\Debug\WinformsUI.pdb
+D:\Coding\C#\Astrophysical_Console\WinformsUI\bin\Debug\AstrophysicalEngine.dll
+D:\Coding\C#\Astrophysical_Console\WinformsUI\bin\Debug\AstrophysicalEngine.pdb
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.csprojAssemblyReference.cache
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.View.Main.resources
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.Properties.Resources.resources
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.View.QueryDialog.resources
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.csproj.GenerateResource.cache
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.csproj.CoreCompileInputs.cache
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.csproj.CopyComplete
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.exe
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.pdb
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.View.DataViewForm.resources
+D:\Coding\C#\Astrophysical_Console\WinformsUI\obj\Debug\WinformsUI.View.ObjectStructureForm.resources

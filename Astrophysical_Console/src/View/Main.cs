@@ -131,7 +131,7 @@ namespace Astrophysical_Console.View
                 Log("No pictures downloaded.");
                 return;
             }
-
+                           
             foreach (Radioobject obj in currentRadioobjects)
             {
                 try

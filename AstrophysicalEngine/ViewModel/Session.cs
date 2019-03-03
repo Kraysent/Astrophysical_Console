@@ -26,6 +26,7 @@ namespace AstrophysicalEngine.ViewModel
             Radioobjects.OnProcessProgressed += ProcessProgressed; 
         }
         public Session(RadioobjectEnumerable radioobjects, int areaRadius) : this(radioobjects, Directory.GetCurrentDirectory() + "\\", areaRadius) { }
+        public Session(string outputPath) : this(new RadioobjectEnumerable(), outputPath, 0) { }
         public Session() : this(new RadioobjectEnumerable(), 0) { }
 
         //-----------------------------------------------------------------------//
@@ -37,7 +38,7 @@ namespace AstrophysicalEngine.ViewModel
 
             try
             {
-                await Radioobjects.DownloadObjectsList(coords, radius);
+                await Radioobjects.DownloadObjectsListAsync(coords, radius);
                 ReportToLog("Downloading list ended.");
             }
             catch (Exception ex)
@@ -82,14 +83,14 @@ namespace AstrophysicalEngine.ViewModel
         public async Task GetPictures()
         {
             ReportToLog("Downloading pictures began.");
-            await Radioobjects.DownloadPictures(OutputPath);
+            await Radioobjects.DownloadPicturesAsync(OutputPath);
             ReportToLog("Downloading pictures ended.");
         }
 
         public async Task GetObjectsDensity()
         {
             ReportToLog("Getting density of objects began.");
-            await Radioobjects.GetDensityRatio(Radioobjects[0].Coords, 15000);
+            await Radioobjects.GetDensityRatioAsync(Radioobjects[0].Coords, 15000);
             ReportToLog("Getting density of objects ended.");
         }
 
