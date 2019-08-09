@@ -29,6 +29,11 @@ namespace AstrophysicalEngine.ViewModel
         public Session(string outputPath) : this(new RadioobjectEnumerable(), outputPath, 0) { }
         public Session() : this(new RadioobjectEnumerable(), 0) { }
 
+        public void ImportObjects(string[] v, FluxImportManager fluxImportManager)
+        {
+            throw new NotImplementedException();
+        }
+
         //-----------------------------------------------------------------------//
 
         public async Task DownloadListOfObjects(Coordinates coords, int radius)
@@ -45,6 +50,21 @@ namespace AstrophysicalEngine.ViewModel
             {
                 ReportToLog(ex.Message);
             }
+        }
+
+        public void ImportObjects(string[] lines, IImportManager importManager)
+        {
+            foreach (string line in lines)
+            {
+                Radioobject obj = importManager.ProcessObject(line);
+
+                if (obj != null)
+                {
+                    Radioobjects.Add(obj);
+                }
+            }
+
+            ReportToLog("Objects were imported.");
         }
 
         public void ImportObjects(string[] lines, ImportType importType)

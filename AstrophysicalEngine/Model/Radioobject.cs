@@ -5,46 +5,38 @@ namespace AstrophysicalEngine.Model
     public class Radioobject
     {
         public const string STANDART_STRING_DELIMETER = "|";
-        
-        private readonly Coordinates _coords;
-        private readonly double _fluxOn325;
-        private readonly double _fluxOn1400;
-        private readonly double _spectralIndex;
-        private double _redshift; 
-        private StructureType _type;
-        private double _densityRatio;
-        
-        public Coordinates Coords => _coords;
-        public double FluxOn325 => _fluxOn325;
-        public double FluxOn1400 => _fluxOn1400;
-        public double SpectralIndex => _spectralIndex;
-        public StructureType Type { get => _type; set => _type = value; }
-        public double DensityRatio { get => _densityRatio; set => _densityRatio = value; }
-        public double Redshift { get => _redshift; set => _redshift = value; }
+
+        public Coordinates Coords { get; set;  }
+        public double FluxOn325 { get; set; }
+        public double FluxOn1400 { get; set; }
+        public double SpectralIndex { get; set; }
+        public StructureType Type { get; set; }
+        public double DensityRatio { get; set; }
+        public double Redshift { get; set; }
 
         public Radioobject(Coordinates coords, double fluxOn325, double fluxOn1400)
         {
-            _coords = coords;
-            _fluxOn325 = fluxOn325;
-            _fluxOn1400 = fluxOn1400;
-            _spectralIndex = (Log10(fluxOn1400) - Log10(FluxOn325)) / (Log10(1400) - Log10(325));
+            Coords = coords;
+            FluxOn325 = fluxOn325;
+            FluxOn1400 = fluxOn1400;
+            SpectralIndex = (Log10(fluxOn1400) - Log10(FluxOn325)) / (Log10(1400) - Log10(325));
         }
 
         public Radioobject(Coordinates coords, double spectralIndex)
         {
-            _coords = coords;
-            _spectralIndex = spectralIndex;
+            Coords = coords;
+            SpectralIndex = spectralIndex;
         }
 
         public Radioobject(Coordinates coords, double fluxOn325, double fluxOn1400, double spectralIndex, StructureType type, double densityRatio, double redshift)
         {
-            _coords = coords;
-            _fluxOn325 = fluxOn325;
-            _fluxOn1400 = fluxOn1400;
-            _spectralIndex = spectralIndex;
-            _type = type;
-            _densityRatio = densityRatio;
-            _redshift = redshift;
+            Coords = coords;
+            FluxOn325 = fluxOn325;
+            FluxOn1400 = fluxOn1400;
+            SpectralIndex = spectralIndex;
+            Type = type;
+            DensityRatio = densityRatio;
+            Redshift = redshift;
         }
 
         public override string ToString()

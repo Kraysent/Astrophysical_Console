@@ -42,8 +42,8 @@ namespace WinformsUI.View
 
             if (openFile.FileName == null || openFile.FileName == "")
                 return;
-
-            _session.ImportObjects(File.ReadAllLines(openFile.FileName), ImportType.ByFlux);
+            
+            _session.ImportObjects(File.ReadAllLines(openFile.FileName), new FluxImportManager());
         }
 
         private async void GetPicturesButton_ClickAsync(object sender, EventArgs e)
@@ -162,5 +162,9 @@ namespace WinformsUI.View
             form.ShowDialog();
         }
 
+        private void Main_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

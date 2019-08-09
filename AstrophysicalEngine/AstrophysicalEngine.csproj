@@ -47,8 +47,11 @@
     <Compile Include="Model\RadioobjectEnumerable.cs" />
     <Compile Include="Model\StructureType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\FluxImportManager.cs" />
+    <Compile Include="ViewModel\IImportManager.cs" />
     <Compile Include="ViewModel\ImportType.cs" />
     <Compile Include="ViewModel\Session.cs" />
+    <Compile Include="ViewModel\SpectralIndexImportManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

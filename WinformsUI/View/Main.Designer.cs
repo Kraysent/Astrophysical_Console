@@ -129,6 +129,7 @@
             this.Controls.Add(this.LogTextBox);
             this.Name = "Main";
             this.Text = "Astrophysical Console";
+            this.Load += new System.EventHandler(this.Main_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
